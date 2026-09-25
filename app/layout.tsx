@@ -22,8 +22,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="nl">
-      <body>{children}<SiteAnalytics /></body>
+    <html lang="nl" data-scroll-behavior="smooth">
+      <body suppressHydrationWarning>{children}<SiteAnalytics /></body>
     </html>
   );
 }

@@ -8,3 +8,4 @@ coverage/
 .vercel/
 assets/hero-bathroom.png
 *.log
+supabase/.temp/
