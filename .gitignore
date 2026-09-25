@@ -1,2 +1,10 @@
 .wrangler/
+.next/
+node_modules/
+.env
+.env.local
+.env.*.local
+coverage/
+.vercel/
 assets/hero-bathroom.png
+*.log
