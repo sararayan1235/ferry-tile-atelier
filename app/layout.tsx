@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { SiteAnalytics } from "@/components/analytics";
 import "./globals.css";
+import "./stone.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://ferry-tile-atelier.vercel.app"),
   title: { default: "S.R. Klus- en Onderhoudswerk", template: "%s · S.R. Tile Atelier" },
   description: "Premium mobile tile repairs, installation and finishing in Zoetermeer and across the Netherlands.",
   openGraph: {
@@ -16,8 +17,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#090a0a",
-  colorScheme: "dark",
+  themeColor: "#f3f0e9",
+  colorScheme: "light",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

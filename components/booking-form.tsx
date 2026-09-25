@@ -16,7 +16,7 @@ const copy = {
     service: "Gewenst werk", date: "Voorkeursdatum", details: "Omschrijving", detailsHint: "Wat moet er gebeuren? Voeg eventueel een foto of afmeting toe.",
     submit: "Aanvraag versturen", submitting: "Aanvraag versturen…", account: "Inloggen om aan te vragen",
     success: "Aanvraag ontvangen", successText: "Bewaar deze referentie. Je vindt de aanvraag terug in je dashboard.",
-    another: "Nog een aanvraag", error: "Controleer de gegevens en probeer opnieuw.", config: "Accounts worden binnenkort geactiveerd.",
+    another: "Nog een aanvraag", error: "Controleer de gegevens en probeer opnieuw.", config: "Accounts worden binnenkort geactiveerd.", privacy: "Uw gegevens worden alleen gebruikt om deze aanvraag en de service te behandelen.", dashboard: "Open dashboard", freeAccount: "Een gratis account zorgt ervoor dat je je aanvraag en status altijd kunt volgen.",
   },
   en: {
     eyebrow: "Request an appointment",
@@ -26,7 +26,7 @@ const copy = {
     service: "Service needed", date: "Preferred date", details: "Project details", detailsHint: "What needs to be done? Add a photo or measurements if useful.",
     submit: "Send request", submitting: "Sending request…", account: "Sign in to request",
     success: "Request received", successText: "Keep this reference. You can follow the request in your dashboard.",
-    another: "Another request", error: "Check the details and try again.", config: "Accounts will be activated shortly.",
+    another: "Another request", error: "Check the details and try again.", config: "Accounts will be activated shortly.", privacy: "Your details are only used to handle this request and provide the service.", dashboard: "Open dashboard", freeAccount: "A free account lets you follow your request and status at all times.",
   },
 };
 
@@ -112,7 +112,7 @@ export function BookingForm({ enabled = true, language = "nl" }: { enabled?: boo
       <h3>{reference}</h3>
       <p>{t.successText}</p>
       <div className="button-row">
-        <Link className="button button-primary" href="/dashboard">Open dashboard <ArrowRight aria-hidden="true" /></Link>
+        <Link className="button button-primary" href="/dashboard">{t.dashboard} <ArrowRight aria-hidden="true" /></Link>
         <button className="button button-ghost" type="button" onClick={() => setState("idle")}>{t.another}</button>
       </div>
     </div>
@@ -130,12 +130,12 @@ export function BookingForm({ enabled = true, language = "nl" }: { enabled?: boo
         <label className="field-wide"><span>{t.details} *</span><textarea name="details" rows={5} minLength={15} maxLength={2000} required placeholder={t.detailsHint} /></label>
         <label className="honeypot" aria-hidden="true">Website<input name="companyWebsite" tabIndex={-1} autoComplete="off" /></label>
       </div>
-      {signedIn === false && <p className="form-hint">Een gratis account zorgt ervoor dat je je aanvraag en status altijd kunt volgen.</p>}
+      {signedIn === false && <p className="form-hint">{t.freeAccount}</p>}
       {message && <p className="form-error" role="alert">{message}</p>}
       <button className="button button-primary button-wide" type="submit" disabled={state === "submitting" || !enabled}>
         {state === "submitting" ? <><LoaderCircle className="spin" aria-hidden="true" />{t.submitting}</> : <>{signedIn === false ? t.account : t.submit}<ArrowRight aria-hidden="true" /></>}
       </button>
-      <p className="privacy-note">Uw gegevens worden alleen gebruikt om deze aanvraag en de service te behandelen.</p>
+      <p className="privacy-note">{t.privacy}</p>
     </form>
   );
 }

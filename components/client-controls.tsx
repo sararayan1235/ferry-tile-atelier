@@ -4,20 +4,29 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
-export function LanguageToggle() {
-  const [language, setLanguage] = useState<"nl" | "en">(() => {
+type Language = "nl" | "en";
+
+export function LanguageToggle({ language, onChange }: { language?: Language; onChange?: (language: Language) => void }) {
+  const [internalLanguage, setInternalLanguage] = useState<Language>(() => {
     if (typeof window === "undefined") return "nl";
-    const saved = localStorage.getItem("sr-language");
-    return saved === "en" ? "en" : "nl";
+    return window.localStorage.getItem("sr-language") === "en" ? "en" : "nl";
   });
+  const activeLanguage = language ?? internalLanguage;
+
   useEffect(() => {
-    document.documentElement.lang = language;
-    localStorage.setItem("sr-language", language);
-  }, [language]);
+    document.documentElement.lang = activeLanguage;
+    window.localStorage.setItem("sr-language", activeLanguage);
+  }, [activeLanguage]);
+
+  function choose(next: Language) {
+    if (!language) setInternalLanguage(next);
+    onChange?.(next);
+  }
+
   return (
     <div className="language-toggle" aria-label="Language / Taal">
-      <button className={language === "nl" ? "active" : ""} onClick={() => setLanguage("nl")} type="button">NL</button>
-      <button className={language === "en" ? "active" : ""} onClick={() => setLanguage("en")} type="button">EN</button>
+      <button className={activeLanguage === "nl" ? "active" : ""} onClick={() => choose("nl")} type="button">NL</button>
+      <button className={activeLanguage === "en" ? "active" : ""} onClick={() => choose("en")} type="button">EN</button>
     </div>
   );
 }
