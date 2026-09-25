@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { SiteAnalytics } from "@/components/analytics";
+import { ScrollRevealObserver } from "@/components/ScrollRevealObserver";
 import "./globals.css";
 import "./stone.css";
 
@@ -24,7 +25,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="nl" data-scroll-behavior="smooth">
-      <body suppressHydrationWarning>{children}<SiteAnalytics /></body>
+      <body suppressHydrationWarning>
+        {children}
+        <ScrollRevealObserver />
+        <SiteAnalytics />
+      </body>
     </html>
   );
 }

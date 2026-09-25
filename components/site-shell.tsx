@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BrandMark } from "@/components/brand-mark";
+import { ScrollRevealObserver } from "@/components/ScrollRevealObserver";
 import { LanguageToggle } from "@/components/client-controls";
 
 export function PublicHeader() {
@@ -27,5 +28,6 @@ export function DashboardShell({ children, admin = false }: { children: React.Re
       <small>Zoetermeer · Heel Nederland</small>
     </aside>
     <main className="dashboard-main">{children}</main>
+    <ScrollRevealObserver />
   </div>;
 }

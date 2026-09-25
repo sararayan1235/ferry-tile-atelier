@@ -231,41 +231,41 @@ export function PublicHome({ accountsEnabled }: { accountsEnabled: boolean }) {
           <a className="scroll-cue scroll-cue-dark" href="#diensten"><span>{t.scroll}</span><i /></a>
         </section>
 
-        <section className="statement section-pad" id="diensten">
+        <section className="statement section-pad reveal" id="diensten">
           <div className="stone-container statement-grid">
-            <div><p className="eyebrow">{t.statementEyebrow}</p><h2>{t.statementTitle}</h2></div>
-            <div><p className="lead">{t.statementText}</p><a className="text-link" href="#booking">{t.statementLink} <ArrowRight aria-hidden="true" /></a></div>
+            <div className="delay-1"><p className="eyebrow">{t.statementEyebrow}</p><h2>{t.statementTitle}</h2></div>
+            <div className="delay-2"><p className="lead">{t.statementText}</p><a className="text-link" href="#booking">{t.statementLink} <ArrowRight aria-hidden="true" /></a></div>
           </div>
         </section>
 
-        <section className="services section-pad section-tint" aria-labelledby="services-title">
+        <section className="services section-pad section-tint reveal" aria-labelledby="services-title">
           <div className="stone-container">
-            <div className="section-heading section-heading-wide"><div><p className="eyebrow">{t.servicesEyebrow}</p><h2 id="services-title">{t.servicesTitle}</h2></div><p>{t.servicesText}</p></div>
-            <div className="service-list">{t.services.map((service, index) => <article className="service-row" key={service.title}><span className="service-number">0{index + 1}</span><h3>{service.title}</h3><p>{service.text}</p><MoveUpRight aria-hidden="true" /></article>)}</div>
+            <div className="section-heading section-heading-wide delay-1"><div><p className="eyebrow">{t.servicesEyebrow}</p><h2 id="services-title">{t.servicesTitle}</h2></div><p>{t.servicesText}</p></div>
+            <div className="service-list delay-2">{t.services.map((service, index) => <article className="service-row" key={service.title}><span className="service-number">0{index + 1}</span><h3>{service.title}</h3><p>{service.text}</p><MoveUpRight aria-hidden="true" /></article>)}</div>
           </div>
         </section>
 
-        <section className="materials section-pad" id="materialen">
+        <section className="materials section-pad reveal" id="materialen">
           <div className="stone-container materials-grid">
-            <div className="materials-image"><Image src="/assets/green-kitchen.png" alt="Handgemaakte groene tegels in een keuken" fill sizes="(max-width: 800px) 100vw, 48vw" /><span>01 / green zellige</span></div>
-            <div className="materials-copy"><p className="eyebrow">{t.materialsEyebrow}</p><h2>{t.materialsTitle}</h2><p className="lead">{t.materialsText}</p><div className="material-list">{t.materials.map((material) => <div className="material-row" key={material.name}><span className={`material-swatch ${material.tone}`} /><div><strong>{material.name}</strong><small>{material.note}</small></div></div>)}</div></div>
+            <div className="materials-image delay-1"><Image src="/assets/green-kitchen.png" alt="Handgemaakte groene tegels in een keuken" fill sizes="(max-width: 800px) 100vw, 48vw" /><span>01 / green zellige</span></div>
+            <div className="materials-copy delay-2"><p className="eyebrow">{t.materialsEyebrow}</p><h2>{t.materialsTitle}</h2><p className="lead">{t.materialsText}</p><div className="material-list">{t.materials.map((material) => <div className="material-row" key={material.name}><span className={`material-swatch ${material.tone}`} /><div><strong>{material.name}</strong><small>{material.note}</small></div></div>)}</div></div>
           </div>
         </section>
 
-        <section className="process section-pad section-tint" id="proces">
-          <div className="stone-container"><div className="section-heading"><div><p className="eyebrow">{t.processEyebrow}</p><h2>{t.processTitle}</h2></div><p>{t.processText}</p></div><ol className="process-list">{t.process.map((step, index) => <li key={step.title}><span>0{index + 1}</span><div><h3>{step.title}</h3><p>{step.text}</p></div></li>)}</ol></div>
+        <section className="process section-pad section-tint reveal" id="proces">
+          <div className="stone-container"><div className="section-heading delay-1"><div><p className="eyebrow">{t.processEyebrow}</p><h2>{t.processTitle}</h2></div><p>{t.processText}</p></div><ol className="process-list delay-2">{t.process.map((step, index) => <li key={step.title}><span>0{index + 1}</span><div><h3>{step.title}</h3><p>{step.text}</p></div></li>)}</ol></div>
         </section>
 
-        <section className="work section-pad" id="werk">
-          <div className="stone-container"><div className="section-heading section-heading-wide"><div><p className="eyebrow">{t.workEyebrow}</p><h2>{t.workTitle}</h2></div><p>{t.workText}</p></div><div className="work-gallery"><figure className="work-image work-image-large"><Image src="/assets/craft-detail.png" alt="Vakman legt een natuurlijke steen tegel" fill sizes="(max-width: 800px) 100vw, 58vw" /><figcaption>Precision / 01</figcaption></figure><figure className="work-image work-image-small"><Image src="/assets/green-kitchen.png" alt="Groene zellige in een keuken" fill sizes="(max-width: 800px) 100vw, 34vw" /><figcaption>Texture / 02</figcaption></figure></div></div>
+        <section className="work section-pad reveal" id="werk">
+          <div className="stone-container"><div className="section-heading section-heading-wide delay-1"><div><p className="eyebrow">{t.workEyebrow}</p><h2>{t.workTitle}</h2></div><p>{t.workText}</p></div><div className="work-gallery delay-2"><figure className="work-image work-image-large"><Image src="/assets/craft-detail.png" alt="Vakman legt een natuurlijke steen tegel" fill sizes="(max-width: 800px) 100vw, 58vw" /><figcaption>Precision / 01</figcaption></figure><figure className="work-image work-image-small"><Image src="/assets/green-kitchen.png" alt="Groene zellige in een keuken" fill sizes="(max-width: 800px) 100vw, 34vw" /><figcaption>Texture / 02</figcaption></figure></div></div>
         </section>
 
-        <section className="booking-section section-pad" id="booking">
+        <section className="booking-section section-pad reveal" id="booking">
           <div className="stone-container booking-grid"><div className="booking-intro"><p className="eyebrow eyebrow-light">{t.bookingEyebrow}</p><h2>{t.bookingTitle}</h2><p>{t.bookingText}</p><div className="booking-contact"><strong>S.R. Klus- & onderhoudswerk</strong><a href="tel:+31687153336">06 871 53 33</a><span>Groen-blauwlaan 153<br />2718 GS Zoetermeer</span></div><p className="secure-note"><Sparkles aria-hidden="true" />{t.privacy}</p></div><BookingForm enabled={accountsEnabled} language={language} /></div>
         </section>
       </main>
 
-      <footer className="site-footer" id="contact"><div className="stone-container footer-inner"><Link className="footer-brand" href="#top"><b>SR</b><span>S.R. Klus- & onderhoudswerk<small>{t.footerNote}</small></span></Link><span>© {new Date().getFullYear()} S.R. Klus- en Onderhoudswerk</span><div className="footer-links"><Link href="/login">{t.footerPortal}</Link><Link href="/admin">{t.footerAdmin}</Link></div></div></footer>
+      <footer className="site-footer" id="contact"><div className="stone-container footer-inner"><Link className="footer-brand" href="#top"><Image src="/assets/logo-work.png" alt="S.R. Klus- en Onderhoudswerk" width={34} height={34} style={{border: '1px solid rgba(243,240,233,.55)', borderRadius: '2px', objectFit: 'cover'}} /><span>S.R. Klus- & onderhoudswerk<small>{t.footerNote}</small></span></Link><span>© {new Date().getFullYear()} S.R. Klus- en Onderhoudswerk</span><div className="footer-links"><Link href="/login">{t.footerPortal}</Link><Link href="/admin">{t.footerAdmin}</Link></div></div></footer>
     </div>
   );
 }
