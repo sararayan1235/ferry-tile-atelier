@@ -75,7 +75,7 @@ export async function onRequestPost(context) {
 
   const now = new Date();
   const bookingId = crypto.randomUUID();
-  const reference = `FG-${now.getUTCFullYear().toString().slice(-2)}${String(now.getUTCMonth()+1).padStart(2,"0")}-${bookingId.slice(0,6).toUpperCase()}`;
+  const reference = `SR-${now.getUTCFullYear().toString().slice(-2)}${String(now.getUTCMonth()+1).padStart(2,"0")}-${bookingId.slice(0,6).toUpperCase()}`;
   const record = { ...booking, reference, createdAt: now.toISOString(), status: "pending" };
 
   if (env.APPOINTMENTS) {

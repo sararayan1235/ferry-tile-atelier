@@ -1,6 +1,6 @@
-# Ferry Tile Atelier
+# S.R. Tile Atelier
 
-A bilingual (Dutch/English), animated, mobile-first appointment website for a self-employed mobile tiler serving Zoetermeer Oost and the Netherlands.
+A bilingual (Dutch/English), animated, mobile-first appointment website for **S.R. Klus- en Onderhoudswerk**, a self-employed mobile tiler serving Zoetermeer Oost and the Netherlands.
 
 ## Local preview
 
