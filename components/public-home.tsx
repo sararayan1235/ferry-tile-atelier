@@ -164,7 +164,7 @@ export function PublicHome({ accountsEnabled }: { accountsEnabled: boolean }) {
               <a className="button button-secondary" href="#materialen">{t.heroSecondary}</a>
             </div>
             <p className="hero-facts enter" style={{ "--d": ".8s" } as React.CSSProperties}>
-              {t.facts.map((fact) => <span key={fact}><Check aria-hidden="true" />{fact}</span>)}
+              {t.facts.map((fact, i) => <span key={i}><Check aria-hidden="true" />{fact}</span>)}
             </p>
           </div>
           <div className="hero-visual">
@@ -183,7 +183,7 @@ export function PublicHome({ accountsEnabled }: { accountsEnabled: boolean }) {
             </div>
             <ol className="service-rows">
               {t.services.map(([title, text], i) => (
-                <li className="service-row" key={title}>
+                <li className="service-row" key={i}>
                   <i data-r="draw" style={{ "--d": `${i * 0.08}s` } as React.CSSProperties} />
                   <span className="num" data-r="rise" style={{ "--d": `${0.15 + i * 0.08}s` } as React.CSSProperties}>0{i + 1}</span>
                   <h3 data-r="rise" style={{ "--d": `${0.2 + i * 0.08}s` } as React.CSSProperties}>{title}</h3>
@@ -221,7 +221,7 @@ export function PublicHome({ accountsEnabled }: { accountsEnabled: boolean }) {
             </div>
             <ol className="process-list">
               {t.process.map(([title, text], i) => (
-                <li key={title} data-r="rise" style={{ "--d": `${i * 0.1}s` } as React.CSSProperties}><span>0{i + 1}</span><h3>{title}</h3><p>{text}</p></li>
+                <li key={i} data-r="rise" style={{ "--d": `${i * 0.1}s` } as React.CSSProperties}><span>0{i + 1}</span><h3>{title}</h3><p>{text}</p></li>
               ))}
             </ol>
           </div>
@@ -234,7 +234,7 @@ export function PublicHome({ accountsEnabled }: { accountsEnabled: boolean }) {
                 <p className="eyebrow" data-r="rise" id="about-title">{t.aboutEyebrow}</p>
                 <blockquote data-r="rise" style={{ "--d": ".1s" } as React.CSSProperties}>{t.aboutQuote}</blockquote>
                 <p data-r="rise" style={{ "--d": ".2s" } as React.CSSProperties}>{t.aboutText}</p>
-                <p className="about-points" data-r="rise" style={{ "--d": ".3s" } as React.CSSProperties}>{t.facts.map((fact) => <span key={fact}>{fact}</span>)}</p>
+                <p className="about-points" data-r="rise" style={{ "--d": ".3s" } as React.CSSProperties}>{t.facts.map((fact, i) => <span key={i}>{fact}</span>)}</p>
               </div>
               <div className="about-photo" data-r="rise" style={{ "--d": ".15s" } as React.CSSProperties}>
                 <Image src="/assets/craft-detail.webp" alt={language === "nl" ? "Vakman legt een natuurstenen tegel" : "Craftsman laying a natural stone tile"} fill sizes="(max-width: 900px) 100vw, 40vw" data-parallax />
