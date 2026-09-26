@@ -10,8 +10,6 @@ assets/hero-bathroom.png
 *.log
 supabase/.temp/
 
-# local design prototypes
-design/
 .dev.vars
 .open-next/
 supabase-access-token.txt

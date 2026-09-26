@@ -1,0 +1,6 @@
+{
+  "name": "sr-direction-prototypes",
+  "private": true,
+  "type": "module",
+  "scripts": { "start": "node serve.js" }
+}

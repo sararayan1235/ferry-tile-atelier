@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S.R. Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,500;112,800;112,900;100,400;100,500;100,600&family=Inter:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Figtree:wght@400;500;600&family=Space+Grotesk:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --white:#F6F4EF; --lime1:#EDE7DC; --lime3:#D8CDBB; --lime5:#BFB19A;
+  --moss5:#6B7B69; --moss7:#46564A; --moss9:#2E3A2F;
+  --brass3:#CDB68A; --brass4:#BEA170; --brass5:#A88B5C; --bronze:#6E5A36;
+  --slate6:#5B6063; --slate8:#34383A; --slate9:#2A2D2F;
+  /* motion tokens: weighty, physical */
+  --ease-settle:cubic-bezier(.22,1,.36,1);   /* heavy object coming to rest */
+  --ease-weight:cubic-bezier(.65,0,.35,1);   /* slow start, slow stop: sliding a slab */
+  --ease-land:cubic-bezier(.34,1.25,.64,1);  /* tiny overshoot: tile seating into mortar */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:auto}
+body{font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.wrap{width:min(100% - 160px,1280px);margin-inline:auto}
+.dir{display:none;overflow-x:clip}
+.dir.on{display:block}
+.sec{padding:140px 0}
+
+/* ---------- reveal primitives ---------- */
+[data-r]{transition:opacity .9s var(--ease-settle) var(--d,0ms),transform 1.1s var(--ease-settle) var(--d,0ms)}
+[data-r=rise]{opacity:0;transform:translateY(32px)}
+[data-r=lay]{opacity:0;transform:perspective(900px) rotateX(-72deg) translateY(24px);transform-origin:50% 100%}
+[data-r=flip]{opacity:0;transform:perspective(900px) rotateY(80deg);transform-origin:0 50%}
+[data-r=draw]{transform:scaleX(0);transform-origin:0 50%;transition:transform 1s var(--ease-weight) var(--d,0ms)}
+[data-r=settle]{opacity:0;transform:translateY(-16px) scale(1.03);box-shadow:0 48px 90px rgba(0,0,0,.35)}
+[data-r].in{opacity:1;transform:none}
+[data-r=settle].in{box-shadow:0 2px 8px rgba(0,0,0,.18);transition:opacity .9s var(--ease-settle) var(--d,0ms),transform 1.4s var(--ease-settle) var(--d,0ms),box-shadow 1.4s var(--ease-settle) var(--d,0ms)}
+.lines>span{display:block;overflow:hidden;padding-bottom:.06em}
+.lines>span>span{display:block;transform:translateY(108%);transition:transform 1.2s var(--ease-settle) var(--d,0ms)}
+.loaded .lines>span>span{transform:none}
+.fade{opacity:0;transform:translateY(16px);transition:opacity .9s var(--ease-settle) var(--d,0ms),transform 1s var(--ease-settle) var(--d,0ms)}
+.loaded .fade{opacity:1;transform:none}
+
+/* ---------- shared bits ---------- */
+.lang{display:flex;gap:2px;font-size:12px;letter-spacing:.08em}
+.lang button{padding:6px 8px;opacity:.55}
+.lang button.on{opacity:1;text-decoration:underline;text-underline-offset:4px}
+.btn{display:inline-flex;align-items:center;gap:12px;min-height:56px;padding:0 32px;font-size:15px;font-weight:600;letter-spacing:.01em;transition:transform .3s var(--ease-settle),background .3s ease,color .3s ease,border-color .3s ease}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0) scale(.99)}
+.btn:focus-visible,.lang button:focus-visible,a:focus-visible{outline:2px solid var(--brass5);outline-offset:3px}
+.swatch{aspect-ratio:1;position:relative;overflow:hidden}
+.sw-graniet{background:radial-gradient(circle at 23% 41%,#2a2d2f 0 1.6px,transparent 2.2px) 0 0/13px 17px,radial-gradient(circle at 71% 18%,#3b3d3e 0 1.1px,transparent 1.7px) 5px 3px/11px 7px,radial-gradient(circle at 44% 77%,#8f8a82 0 2px,transparent 2.8px) 2px 9px/19px 23px,radial-gradient(circle at 60% 50%,#f1ede6 0 1.3px,transparent 2px) 7px 1px/17px 11px,radial-gradient(circle at 15% 85%,#6f6a62 0 1px,transparent 1.6px) 0 4px/7px 13px,linear-gradient(135deg,#bdb7ac,#a9a397)}
+.sw-marmer{background:linear-gradient(118deg,transparent 34%,rgba(120,120,120,.12) 37%,rgba(110,110,110,.38) 39.2%,rgba(120,120,120,.12) 41.5%,transparent 44%),linear-gradient(162deg,transparent 58%,rgba(130,130,130,.3) 59%,transparent 60.5%),linear-gradient(96deg,transparent 18%,rgba(100,100,100,.22) 19%,transparent 20%),linear-gradient(135deg,#f4f2ee,#e6e2da)}
+.sw-kwartsiet{background:repeating-linear-gradient(172deg,transparent 0 14px,rgba(255,255,255,.18) 14px 16px),linear-gradient(172deg,#d9d2c6 0%,#c4b8a3 30%,#e6dfd2 48%,#b3a68f 72%,#d3c9b7 100%)}
+.sw-composiet{background:radial-gradient(circle,rgba(0,0,0,.09) 1px,transparent 1.5px) 0 0/6px 6px,radial-gradient(circle,rgba(255,255,255,.6) 1px,transparent 1.5px) 3px 3px/8px 8px,#e3ddd2}
+.sw-keramiek{background:repeating-linear-gradient(0deg,transparent 0 46px,#e9e4da 46px 48px),repeating-linear-gradient(90deg,transparent 0 46px,#e9e4da 46px 48px),linear-gradient(135deg,#71836f,#5a6b59)}
+.switcher{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:200;display:flex;gap:4px;align-items:center;padding:6px;background:rgba(24,26,27,.9);color:#F6F4EF;backdrop-filter:blur(10px);font:500 13px/1 Inter,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.switcher span{padding:0 12px 0 10px;opacity:.6;letter-spacing:.06em;text-transform:uppercase;font-size:11px}
+.switcher button{padding:11px 16px;opacity:.7}
+.switcher button.on{background:#F6F4EF;color:#2A2D2F;opacity:1}
+
+/* =========================== A — KALKSTEEN =========================== */
+#A{background:var(--white);color:var(--moss9)}
+#A .hdr{position:sticky;top:0;z-index:50;background:rgba(246,244,239,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--lime3)}
+#A .hdr .wrap{height:88px;display:flex;align-items:center;justify-content:space-between}
+.lockA{display:flex;align-items:center;gap:14px}
+.markA{width:44px;height:44px;background:url(img/logo-full.png) -5.8px -5.8px/144.3px auto no-repeat}
+.lockA b{display:block;font:900 20px/1 Archivo;font-stretch:112%;letter-spacing:.04em}
+.lockA small{display:block;margin-top:4px;font:500 9px/1 Archivo;letter-spacing:.3em;text-transform:uppercase;color:var(--slate6)}
+#A nav{display:flex;gap:36px;font:500 12px/1 Inter;letter-spacing:.1em;text-transform:uppercase}
+#A nav a{position:relative;padding:8px 0}
+#A nav a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--moss9);transform:scaleX(0);transform-origin:right;transition:transform .45s var(--ease-weight)}
+#A nav a:hover::after{transform:scaleX(1);transform-origin:left}
+#A .right{display:flex;align-items:center;gap:28px}
+#A .btn-p{background:var(--slate9);color:var(--white)}
+#A .btn-p:hover{background:var(--moss9)}
+#A .btn-s{border:1px solid var(--moss9);color:var(--moss9)}
+#A .btn-s:hover{background:var(--moss9);color:var(--white)}
+.heroA{min-height:calc(100vh - 88px);display:grid;grid-template-columns:repeat(12,1fr);gap:0 32px;align-items:center;padding:48px 0 80px}
+.heroA .copy{grid-column:1/7}
+.eyeA{font:500 12px/1 Inter;letter-spacing:.18em;text-transform:uppercase;color:var(--bronze)}
+.heroA h1{margin:28px 0 32px;font:800 clamp(64px,8.4vw,120px)/.92 Archivo;font-stretch:112%;letter-spacing:-.035em}
+.heroA .lead{max-width:470px;font-size:20px;line-height:1.5;color:var(--slate6)}
+.heroA .ctas{display:flex;gap:16px;margin-top:40px}
+.heroA .facts{margin-top:28px;font-size:13px;letter-spacing:.04em;color:var(--slate6)}
+.heroA .visual{grid-column:7/13;position:relative;perspective:1400px}
+.heroA .visual::before{content:"";position:absolute;left:-20px;top:0;bottom:0;width:1px;background:var(--brass5);transform:scaleY(0);transform-origin:top;transition:transform 1.6s var(--ease-weight) .3s}
+.loaded .heroA .visual::before{transform:scaleY(1)}
+.split{aspect-ratio:4/5;display:grid;grid-template:1fr 1fr/1fr 1fr;gap:3px}
+.q{background:url(img/hero-bathroom.jpg) no-repeat;background-size:200% 200%;opacity:0;transform:translateY(-80px) rotateX(24deg) scale(.97);transition:opacity .8s var(--ease-settle) var(--d),transform 1.3s var(--ease-land) var(--d);translate:calc(var(--sx)*var(--p,0)*var(--open,12px)) calc(var(--sy)*var(--p,0)*var(--open,12px))}
+.q1{background-position:0 0;--sx:-1;--sy:-1;--d:.25s}.q2{background-position:100% 0;--sx:1;--sy:-1;--d:.36s}
+.q3{background-position:0 100%;--sx:-1;--sy:1;--d:.47s}.q4{background-position:100% 100%;--sx:1;--sy:1;--d:.58s}
+.loaded .q{opacity:1;transform:none}
+.capA{margin-top:16px;display:flex;justify-content:space-between;font-size:12px;letter-spacing:.06em;color:var(--slate6)}
+.headA{display:grid;grid-template-columns:repeat(12,1fr);gap:32px;margin-bottom:72px}
+.headA>div{grid-column:1/7}
+.headA h2{margin-top:20px;font:800 clamp(40px,4.6vw,64px)/1 Archivo;font-stretch:112%;letter-spacing:-.03em}
+.rowsA .row{position:relative;display:grid;grid-template-columns:80px 1fr 1.2fr 40px;gap:32px;align-items:baseline;padding:36px 0;transition:padding .5s var(--ease-settle)}
+.rowsA .row:hover{padding-left:16px}
+.rowsA .row>.hl{position:absolute;left:0;right:0;top:0;height:1px;background:var(--lime3)}
+.rowsA .n{font:500 13px Inter;color:var(--bronze);letter-spacing:.1em}
+.rowsA h3{font:800 32px/1.1 Archivo;font-stretch:112%;letter-spacing:-.02em}
+.rowsA p{font-size:17px;line-height:1.55;color:var(--slate6)}
+.rowsA .ar{font-size:22px;transition:transform .5s var(--ease-settle)}
+.rowsA .row:hover .ar{transform:translateX(8px)}
+.matA{background:var(--lime1)}
+.gridA{display:grid;grid-template-columns:repeat(5,1fr);gap:24px}
+.gridA h3{margin:20px 0 10px;font:800 20px Archivo;font-stretch:112%}
+.gridA dl{font-size:14px;line-height:1.5;color:var(--slate6)}
+.gridA dt{margin-top:10px;font:600 11px Inter;letter-spacing:.14em;text-transform:uppercase;color:var(--bronze)}
+.aboutA{display:grid;grid-template-columns:repeat(12,1fr);gap:32px;align-items:center}
+.aboutA-copy{grid-column:1/7}.aboutA blockquote{font:800 clamp(34px,3.6vw,52px)/1.08 Archivo;font-stretch:112%;letter-spacing:-.025em}
+.aboutA .txt{margin-top:32px;font-size:18px;line-height:1.6;color:var(--slate6);max-width:520px}
+.pointsA{display:flex;gap:28px;margin-top:28px;font-size:14px;font-weight:500}
+.pointsA span::before{content:"";display:inline-block;width:8px;height:8px;margin-right:10px;background:var(--brass5)}
+.aboutA .ph{grid-column:8/13;aspect-ratio:4/5;overflow:hidden}
+.aboutA .ph img{width:100%;height:120%;object-fit:cover;transform:translateY(var(--y,0px))}
+.ctaA{background:var(--lime3)}
+.ctaA .wrap{display:grid;grid-template-columns:1fr auto;gap:48px;align-items:end}
+.ctaA h2{font:800 clamp(40px,4.6vw,64px)/1 Archivo;font-stretch:112%;letter-spacing:-.03em}
+.ctaA .tel{display:block;margin-top:24px;font:800 clamp(48px,7vw,104px)/1 Archivo;font-stretch:112%;letter-spacing:-.03em}
+.ctaA address{margin-top:20px;font-style:normal;font-size:16px;color:var(--moss9)}
+.footA{padding:32px 0;font-size:13px;color:var(--slate6);border-top:1px solid var(--lime3)}
+
+/* =========================== B — MOS =========================== */
+#B{background:var(--moss9);color:var(--white);font-family:Figtree,sans-serif}
+#B .hdr{position:sticky;top:0;z-index:50;background:rgba(46,58,47,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--moss7)}
+#B .hdr .wrap{height:88px;display:flex;align-items:center;justify-content:space-between}
+.logoImg{height:52px;width:auto}
+#B nav{display:flex;gap:36px;font-size:15px;font-weight:500}
+#B nav a{opacity:.85;transition:opacity .3s}
+#B nav a:hover{opacity:1;color:var(--brass3)}
+#B .right{display:flex;align-items:center;gap:28px}
+#B .lang{color:var(--lime3)}
+#B .btn-o{border:1px solid var(--brass3);color:var(--white)}
+#B .btn-o:hover{background:var(--brass3);color:var(--slate9)}
+#B .btn-p{background:var(--brass4);color:var(--slate9)}
+#B .btn-p:hover{background:var(--brass3)}
+.heroB{display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 88px)}
+.heroB .copy{padding:0 80px;display:flex;flex-direction:column;justify-content:center;max-width:720px;margin-left:auto;width:100%}
+.eyeB{display:flex;align-items:center;gap:16px;font:600 12px/1 Figtree;letter-spacing:.18em;text-transform:uppercase;color:var(--brass3)}
+.eyeB i{display:block;width:48px;height:1px;background:var(--brass3);transform:scaleX(0);transform-origin:left;transition:transform 1.2s var(--ease-weight) .2s}
+.loaded .eyeB i,.eyeB.in i{transform:scaleX(1)}
+.heroB h1{margin:32px 0;font:300 clamp(52px,6vw,88px)/1.02 Fraunces;letter-spacing:-.02em}
+.heroB h1 em{font-style:italic;color:var(--brass3)}
+.heroB .lead{max-width:470px;font-size:19px;line-height:1.55;color:var(--lime3)}
+.heroB .ctas{display:flex;gap:28px;align-items:center;margin-top:40px}
+.heroB .tel{font-weight:500;text-decoration:underline;text-underline-offset:6px}
+.frameB{position:relative;overflow:hidden;opacity:0;transform:translateY(-20px) scale(1.04);box-shadow:0 60px 120px rgba(0,0,0,.5);transition:opacity .8s var(--ease-settle) .15s,transform 1.6s var(--ease-settle) .15s,box-shadow 1.6s var(--ease-settle) .15s}
+.loaded .frameB{opacity:1;transform:none;box-shadow:0 0 0 rgba(0,0,0,0)}
+.frameB img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(calc(1.12 - var(--p,0)*.12)) translateY(calc(var(--p,0)*-24px))}
+.frameB figcaption{position:absolute;left:28px;bottom:24px;font-size:12px;letter-spacing:.08em;color:var(--white);text-shadow:0 1px 8px rgba(0,0,0,.5)}
+.svcB{background:var(--lime3);color:var(--slate9)}
+.headB h2{margin-top:24px;font:300 clamp(40px,4.4vw,64px)/1.05 Fraunces;letter-spacing:-.02em;max-width:760px}
+.svcB .eyeB{color:var(--bronze)}.svcB .eyeB i{background:var(--bronze)}
+.cardsB{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:72px;background:var(--lime5)}
+.cardB{background:var(--lime3);padding:48px;min-height:260px;display:flex;flex-direction:column;justify-content:space-between;transition:background .5s ease}
+.cardB:hover{background:var(--lime1)}
+.cardB .n{font:italic 300 40px Fraunces;color:var(--bronze)}
+.cardB h3{font:400 32px/1.1 Fraunces;margin-top:40px}
+.cardB p{margin-top:12px;font-size:17px;line-height:1.55;color:var(--slate6);max-width:420px}
+.matB .eyeB{margin-bottom:0}
+.rowB{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;margin-top:72px;perspective:1200px}
+.idx{background:var(--lime1);color:var(--slate9);padding:16px 16px 24px}
+.idx h3{margin:20px 4px 12px;font:400 26px Fraunces}
+.idx dl{padding:0 4px;font-size:14px;line-height:1.5;color:var(--slate6)}
+.idx dt{margin-top:12px;font:600 11px Figtree;letter-spacing:.14em;text-transform:uppercase;color:var(--bronze)}
+.aboutB{background:var(--lime1);color:var(--slate9)}
+.aboutB .wrap{display:grid;grid-template-columns:5fr 6fr;gap:96px}
+.stickB{position:sticky;top:128px;height:calc(100vh - 200px);overflow:hidden}
+.stickB img{width:100%;height:100%;object-fit:cover}
+.stepsB .step{min-height:62vh;display:flex;flex-direction:column;justify-content:center;border-top:1px solid var(--lime5)}
+.stepsB .step:first-child{border-top:0}
+.stepsB .n{font:italic 300 22px Fraunces;color:var(--bronze)}
+.stepsB h3{margin-top:16px;font:300 clamp(40px,4vw,60px)/1.05 Fraunces;letter-spacing:-.02em}
+.stepsB p{margin-top:20px;font-size:19px;line-height:1.55;color:var(--slate6);max-width:460px}
+.ctaB{text-align:center}
+.ctaB h2{font:300 clamp(48px,6vw,96px)/1 Fraunces;letter-spacing:-.02em}
+.ctaB h2 em{font-style:italic;color:var(--brass3)}
+.ctaB p{margin:28px auto 40px;max-width:520px;font-size:19px;line-height:1.55;color:var(--lime3)}
+.ctaB address{margin-top:32px;font-style:normal;color:var(--lime3)}
+.footB{padding:32px 0;font-size:13px;color:var(--lime5);border-top:1px solid var(--moss7)}
+
+/* =========================== C — LEISTEEN =========================== */
+#C{background:var(--slate9);color:var(--white);font-family:"Space Grotesk",sans-serif}
+.mono{font-family:"IBM Plex Mono",monospace}
+#C .hdr{position:sticky;top:0;z-index:50;background:rgba(42,45,47,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--slate8)}
+#C .hdr .wrap{height:88px;display:flex;align-items:center;justify-content:space-between}
+#C nav{display:flex;gap:36px;font:400 12px "IBM Plex Mono";letter-spacing:.08em;text-transform:uppercase;color:var(--lime3)}
+#C nav a:hover{color:var(--brass3)}
+#C .right{display:flex;align-items:center;gap:28px}
+#C .lang{font-family:"IBM Plex Mono";color:var(--brass3)}
+#C .btn{font-weight:500}
+#C .btn-l{background:var(--white);color:var(--slate9)}
+#C .btn-l:hover{background:var(--brass3)}
+#C .btn-o{border:1px solid var(--brass3);color:var(--lime1)}
+#C .btn-o:hover{border-color:var(--white)}
+.heroC{position:relative;min-height:calc(100vh - 88px);display:flex;flex-direction:column;align-items:center;padding:72px 0 40px;text-align:center;overflow:hidden}
+.gridC{position:absolute;inset:0;display:grid;grid-template-columns:repeat(12,1fr);width:min(100% - 160px,1280px);margin-inline:auto;pointer-events:none}
+.gridC i{border-left:1px solid var(--slate8);transform:scaleY(0);transform-origin:top;transition:transform 1.4s var(--ease-weight) calc(var(--i)*60ms)}
+.gridC i:last-child{border-right:1px solid var(--slate8)}
+.loaded .gridC i{transform:scaleY(1)}
+.eyeC{font:400 12px "IBM Plex Mono";letter-spacing:.12em;text-transform:uppercase;color:var(--brass3)}
+.heroC h1{margin:24px 0;font:500 clamp(52px,6.2vw,92px)/.98 "Space Grotesk";letter-spacing:-.035em}
+.heroC .lead{max-width:560px;font-size:18px;line-height:1.55;color:var(--lime3)}
+.heroC .ctas{display:flex;gap:16px;margin-top:36px;justify-content:center}
+.scene{position:relative;width:100%;height:440px;margin-top:8px;perspective:1400px;display:grid;place-items:center}
+.tile3d{position:relative;width:300px;height:300px;transform-style:preserve-3d;opacity:0;transform:rotateX(58deg) rotateZ(-110deg) translateZ(320px);transition:opacity .9s ease .35s,transform 1.8s var(--ease-land) .35s}
+.loaded .tile3d{opacity:1;transform:rotateX(58deg) rotateZ(calc(-45deg + var(--p,0)*80deg)) translateZ(calc(var(--p,0)*60px))}
+.settled .tile3d{transition:transform .35s var(--ease-settle)}
+.face{position:absolute}
+.top{inset:0;transform:translateZ(11px);background:repeating-linear-gradient(8deg,transparent 0 22px,rgba(255,255,255,.12) 22px 24px),radial-gradient(ellipse at 30% 20%,rgba(255,255,255,.35),transparent 60%),linear-gradient(160deg,#e3d9c8,#cfc2ab 55%,#d9cdb9)}
+.bot{inset:0;transform:translateZ(-11px);background:#5e5648}
+.sN,.sS{left:0;top:139px;width:300px;height:22px;background:#9e9079}
+.sN{transform:rotateX(90deg) translateZ(150px)}.sS{transform:rotateX(-90deg) translateZ(150px);background:#8a7d68}
+.sE,.sW{left:139px;top:0;width:22px;height:300px;background:#95886f}
+.sE{transform:rotateY(90deg) translateZ(150px)}.sW{transform:rotateY(-90deg) translateZ(150px);background:#a39680}
+.shadowC{position:absolute;left:50%;top:calc(50% + 120px);width:380px;height:50px;margin-left:-190px;background:radial-gradient(ellipse,rgba(0,0,0,.55),transparent 70%);filter:blur(6px);opacity:0;transform:scale(calc(1 - var(--p,0)*.25));transition:opacity 1.2s ease 1s}
+.loaded .shadowC{opacity:1}
+.dim{position:absolute;display:flex;align-items:center;gap:12px;font:400 12px "IBM Plex Mono";letter-spacing:.04em;color:var(--brass3);white-space:nowrap}
+.dim i{display:block;width:140px;height:1px;background:var(--brass5);transform:scaleX(0);transition:transform 1s var(--ease-weight) var(--d)}
+.dim span{opacity:0;transition:opacity .8s ease calc(var(--d) + .5s)}
+.dim.l i{transform-origin:right}.dim.r i{transform-origin:left}
+.loaded .dim i{transform:scaleX(1)}.loaded .dim span{opacity:1}
+.d1{right:calc(50% + 190px);top:46%;--d:1.5s}.d2{left:calc(50% + 200px);top:28%;--d:1.7s}.d3{left:calc(50% + 200px);top:66%;--d:1.9s}
+.capC{position:absolute;left:0;bottom:16px;font:400 11px "IBM Plex Mono";color:var(--slate6)}
+.headC{display:flex;justify-content:space-between;align-items:end;gap:48px;margin-bottom:64px}
+.headC h2{margin-top:20px;font:500 clamp(40px,4.4vw,64px)/1 "Space Grotesk";letter-spacing:-.03em;max-width:720px}
+.cellsC{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--slate8);border-left:1px solid var(--slate8)}
+.cellC{position:relative;padding:40px 32px 48px;border-right:1px solid var(--slate8);border-bottom:1px solid var(--slate8);min-height:300px;transition:background .4s ease}
+.cellC::before{content:"";position:absolute;left:-1px;top:-1px;width:0;height:2px;background:var(--brass3);transition:width .6s var(--ease-weight)}
+.cellC:hover{background:var(--slate8)}
+.cellC:hover::before{width:calc(100% + 2px)}
+.cellC .n{font:400 12px "IBM Plex Mono";color:var(--brass3)}
+.cellC h3{margin-top:96px;font:500 26px/1.1 "Space Grotesk";letter-spacing:-.01em}
+.cellC p{margin-top:12px;font-size:15px;line-height:1.55;color:var(--lime3)}
+.matC{background:#26292b}
+.samplesC{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;perspective:1000px}
+.sampleC .swatch{transition:transform .6s var(--ease-settle),box-shadow .6s var(--ease-settle);box-shadow:0 18px 30px rgba(0,0,0,.35)}
+.sampleC:hover .swatch{transform:rotateX(18deg) translateY(-8px);box-shadow:0 34px 40px rgba(0,0,0,.5)}
+.sampleC h3{margin-top:24px;font:500 20px "Space Grotesk"}
+.sampleC dl{margin-top:10px;font:400 12px/1.6 "IBM Plex Mono";color:var(--lime3)}
+.sampleC dt{margin-top:8px;color:var(--brass3)}
+.aboutC .wrap{display:grid;grid-template-columns:repeat(12,1fr);gap:32px;align-items:center}
+.aboutC .ph{grid-column:1/7;aspect-ratio:5/4;overflow:hidden;position:relative}
+.aboutC .ph img{width:100%;height:124%;object-fit:cover;filter:grayscale(1) contrast(1.15) brightness(.9);transform:translateY(var(--y,0px))}
+.aboutC .txt{grid-column:8/13}
+.aboutC h2{margin-top:20px;font:500 clamp(34px,3.4vw,48px)/1.05 "Space Grotesk";letter-spacing:-.03em}
+.aboutC p{margin-top:24px;font-size:17px;line-height:1.6;color:var(--lime3)}
+.specsC{margin-top:28px;font:400 12px/2 "IBM Plex Mono";color:var(--brass3)}
+.ctaC{background:var(--white);color:var(--slate9)}
+.ctaC .wrap{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:end}
+.ctaC h2{font:500 clamp(44px,5vw,76px)/1 "Space Grotesk";letter-spacing:-.035em}
+.ctaC .tel{display:block;font:500 clamp(32px,3.4vw,48px) "Space Grotesk";letter-spacing:-.02em}
+.ctaC address{margin:12px 0 28px;font:400 13px/1.8 "IBM Plex Mono";font-style:normal;color:var(--slate6)}
+.ctaC .btn{background:var(--slate9);color:var(--white)}
+.ctaC .btn:hover{background:var(--moss9)}
+.footC{padding:32px 0;font:400 12px "IBM Plex Mono";color:var(--slate6);border-top:1px solid var(--slate8)}
+
+/* ---------- responsive ---------- */
+@media (max-width:980px){
+  .wrap,.gridC{width:calc(100% - 32px)}
+  nav{display:none!important}
+  .sec{padding:88px 0}
+  .heroA{grid-template-columns:1fr;gap:48px}.heroA .copy,.heroA .visual{grid-column:1/-1}.heroA .visual::before{display:none}
+  .headA>div,.aboutA-copy,.aboutA .ph{grid-column:1/-1}.ctaA .btn,.ctaC .btn{justify-self:start}.heroA{--open:6px}.aboutA,.headA{grid-template-columns:1fr}
+  .rowsA .row{grid-template-columns:48px 1fr;gap:12px 20px}.rowsA .row p{grid-column:2}.rowsA .ar{display:none}
+  .gridA,.rowB,.samplesC{grid-template-columns:1fr 1fr}
+  .ctaA .wrap,.ctaC .wrap{grid-template-columns:1fr}
+  .heroB{grid-template-columns:1fr}.heroB .copy{padding:64px 16px}.frameB{min-height:70vh}
+  .cardsB,.cellsC{grid-template-columns:1fr}
+  .aboutB .wrap{grid-template-columns:1fr;gap:32px}.stickB{position:relative;top:0;height:60vh}
+  .aboutC .ph,.aboutC .txt{grid-column:1/-1}
+  .headC{flex-direction:column;align-items:start}
+  .dim{display:none}.scene{height:360px}
+  .hdr .btn{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none!important;animation:none!important}
+  [data-r],.fade,.q,.frameB,.tile3d,.lines>span>span{opacity:1!important;transform:none!important;translate:none!important}
+  .tile3d{transform:rotateX(58deg) rotateZ(-45deg)!important}
+  .gridC i,.dim i,.eyeB i,.heroA .visual::before{transform:none!important}.dim span,.shadowC{opacity:1!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================ A — KALKSTEEN ============================ -->
+<div class="dir on" id="A">
+  <header class="hdr"><div class="wrap">
+    <a class="lockA" href="#" aria-label="S.R. Fine Tile Atelier"><span class="markA" aria-hidden="true"></span><span><b>S.R.</b><small>Fine tile atelier</small></span></a>
+    <div class="right">
+      <nav><a href="#" data-t="nav1"></a><a href="#" data-t="nav2"></a><a href="#" data-t="nav3"></a><a href="#" data-t="nav4"></a></nav>
+      <div class="lang"><button data-l="nl">NL</button><button data-l="en">EN</button></div>
+      <a class="btn btn-p" href="#" data-t="cta"></a>
+    </div>
+  </div></header>
+  <main>
+    <section class="wrap heroA">
+      <div class="copy">
+        <p class="eyeA fade" style="--d:.1s" data-t="a.eye"></p>
+        <h1 class="lines"><span><span style="--d:.15s" data-t="a.h1a"></span></span><span><span style="--d:.28s" data-t="a.h1b"></span></span></h1>
+        <p class="lead fade" style="--d:.5s" data-t="a.lead"></p>
+        <div class="ctas fade" style="--d:.65s"><a class="btn btn-p" href="#" data-t="cta"></a><a class="btn btn-s" href="#" data-t="cta2"></a></div>
+        <p class="facts fade" style="--d:.8s" data-t="facts"></p>
+      </div>
+      <div class="visual">
+        <div class="split"><div class="q q1"></div><div class="q q2"></div><div class="q q3"></div><div class="q q4"></div></div>
+        <div class="capA fade" style="--d:.9s"><span data-t="a.cap"></span><span>01 / 04</span></div>
+      </div>
+    </section>
+
+    <section class="sec"><div class="wrap">
+      <div class="headA"><div><p class="eyeA" data-r="rise" data-t="svc.eye"></p><h2 data-r="rise" style="--d:.1s" data-t="svc.title"></h2></div></div>
+      <div class="rowsA" id="rowsA"></div>
+    </div></section>
+
+    <section class="sec matA"><div class="wrap">
+      <div class="headA"><div><p class="eyeA" data-r="rise" data-t="mat.eye"></p><h2 data-r="rise" style="--d:.1s" data-t="mat.title"></h2></div></div>
+      <div class="gridA" id="gridA"></div>
+    </div></section>
+
+    <section class="sec"><div class="wrap aboutA">
+      <div class="aboutA-copy">
+        <p class="eyeA" data-r="rise" data-t="about.eye"></p>
+        <blockquote data-r="rise" style="--d:.1s;margin-top:24px" data-t="about.quote"></blockquote>
+        <p class="txt" data-r="rise" style="--d:.2s" data-t="about.text"></p>
+        <div class="pointsA" data-r="rise" style="--d:.3s"><span data-t="pt1"></span><span data-t="pt2"></span><span data-t="pt3"></span></div>
+      </div>
+      <div class="ph" data-r="rise" style="--d:.15s"><img src="img/craft-detail.png" alt="" data-par></div>
+    </div></section>
+
+    <section class="sec ctaA"><div class="wrap">
+      <div><h2 data-r="rise" data-t="cta.title"></h2><a class="tel" href="tel:+31687153333" data-r="rise" style="--d:.12s">06 871 53 33</a><address data-r="rise" style="--d:.2s">Groen-blauwlaan 153, 2718 GS Zoetermeer</address></div>
+      <a class="btn btn-p" href="#" data-r="rise" style="--d:.3s" data-t="cta"></a>
+    </div></section>
+  </main>
+  <footer class="footA"><div class="wrap" data-t="foot"></div></footer>
+</div>
+
+<!-- ============================ B — MOS ============================ -->
+<div class="dir" id="B">
+  <header class="hdr"><div class="wrap">
+    <a href="#" aria-label="S.R. Fine Tile Atelier, Klus- & onderhoudswerk"><img class="logoImg" src="img/logo-full.png" alt="S.R. Fine Tile Atelier"></a>
+    <div class="right">
+      <nav><a href="#" data-t="nav1"></a><a href="#" data-t="nav2"></a><a href="#" data-t="nav3"></a><a href="#" data-t="nav4"></a></nav>
+      <div class="lang"><button data-l="nl">NL</button><button data-l="en">EN</button></div>
+      <a class="btn btn-o" href="#" data-t="cta"></a>
+    </div>
+  </div></header>
+  <main>
+    <section class="heroB">
+      <div class="copy">
+        <p class="eyeB fade" style="--d:.1s"><i></i><span data-t="b.eye"></span></p>
+        <h1 class="lines"><span><span style="--d:.2s" data-t="b.h1a"></span></span><span><span style="--d:.34s" data-th="b.h1b"></span></span></h1>
+        <p class="lead fade" style="--d:.55s" data-t="b.lead"></p>
+        <div class="ctas fade" style="--d:.7s"><a class="btn btn-p" href="#" data-t="cta"></a><a class="tel" href="tel:+31687153333" data-t="call"></a></div>
+      </div>
+      <figure class="frameB"><img src="img/hero-bathroom.jpg" alt=""><figcaption data-t="b.cap"></figcaption></figure>
+    </section>
+
+    <section class="sec svcB"><div class="wrap">
+      <div class="headB"><p class="eyeB" data-r="rise"><i></i><span data-t="svc.eye"></span></p><h2 data-r="rise" style="--d:.1s" data-t="svc.title"></h2></div>
+      <div class="cardsB" id="cardsB"></div>
+    </div></section>
+
+    <section class="sec matB"><div class="wrap">
+      <div class="headB"><p class="eyeB" data-r="rise"><i></i><span data-t="mat.eye"></span></p><h2 data-r="rise" style="--d:.1s" data-t="mat.title"></h2></div>
+      <div class="rowB" id="rowB"></div>
+    </div></section>
+
+    <section class="sec aboutB"><div class="wrap">
+      <div><div class="stickB" data-r="settle"><img src="img/green-kitchen.png" alt=""></div></div>
+      <div class="stepsB" id="stepsB"></div>
+    </div></section>
+
+    <section class="sec ctaB"><div class="wrap">
+      <h2 data-r="rise" data-th="b.ctaTitle"></h2>
+      <p data-r="rise" style="--d:.1s" data-t="cta.text"></p>
+      <a class="btn btn-p" href="#" data-r="rise" style="--d:.2s" data-t="cta"></a>
+      <address data-r="rise" style="--d:.3s">06 871 53 33 · Groen-blauwlaan 153, 2718 GS Zoetermeer</address>
+    </div></section>
+  </main>
+  <footer class="footB"><div class="wrap" data-t="foot"></div></footer>
+</div>
+
+<!-- ============================ C — LEISTEEN ============================ -->
+<div class="dir" id="C">
+  <header class="hdr"><div class="wrap">
+    <a href="#" aria-label="S.R. Fine Tile Atelier, Klus- & onderhoudswerk"><img class="logoImg" src="img/logo-full.png" alt="S.R. Fine Tile Atelier"></a>
+    <div class="right">
+      <nav><a href="#" data-t="nav1"></a><a href="#" data-t="nav2"></a><a href="#" data-t="nav3"></a><a href="#" data-t="nav4"></a></nav>
+      <div class="lang"><button data-l="nl">NL</button><button data-l="en">EN</button></div>
+      <a class="btn btn-l" href="#" data-t="cta"></a>
+    </div>
+  </div></header>
+  <main>
+    <section class="heroC">
+      <div class="gridC" aria-hidden="true"></div>
+      <p class="eyeC fade" style="--d:.1s" data-t="c.eye"></p>
+      <h1 class="lines"><span><span style="--d:.15s" data-t="c.h1a"></span></span><span><span style="--d:.28s" data-t="c.h1b"></span></span></h1>
+      <p class="lead fade" style="--d:.5s" data-t="c.lead"></p>
+      <div class="ctas fade" style="--d:.65s"><a class="btn btn-l" href="#" data-t="cta"></a><a class="btn btn-o" href="#" data-t="cta2"></a></div>
+      <div class="scene">
+        <div class="shadowC"></div>
+        <div class="tile3d"><div class="face bot"></div><div class="face sN"></div><div class="face sS"></div><div class="face sE"></div><div class="face sW"></div><div class="face top"></div></div>
+        <div class="dim l d1"><span>600 × 600 mm</span><i></i></div>
+        <div class="dim r d2"><i></i><span data-t="c.dim2"></span></div>
+        <div class="dim r d3"><i></i><span data-t="c.dim3"></span></div>
+      </div>
+    </section>
+
+    <section class="sec"><div class="wrap">
+      <div class="headC"><div><p class="eyeC" data-r="rise" data-t="svc.eyeC"></p><h2 data-r="rise" style="--d:.1s" data-t="svc.title"></h2></div></div>
+      <div class="cellsC" id="cellsC"></div>
+    </div></section>
+
+    <section class="sec matC"><div class="wrap">
+      <div class="headC"><div><p class="eyeC" data-r="rise" data-t="mat.eyeC"></p><h2 data-r="rise" style="--d:.1s" data-t="mat.title"></h2></div></div>
+      <div class="samplesC" id="samplesC"></div>
+    </div></section>
+
+    <section class="sec aboutC"><div class="wrap">
+      <div class="ph" data-r="rise"><img src="img/green-kitchen.png" alt="" data-par></div>
+      <div class="txt"><p class="eyeC" data-r="rise" data-t="about.eyeC"></p><h2 data-r="rise" style="--d:.1s" data-t="c.aboutTitle"></h2><p data-r="rise" style="--d:.2s" data-t="about.text"></p>
+        <p class="specsC" data-r="rise" style="--d:.3s">— <span data-t="pt1"></span><br>— <span data-t="pt2"></span><br>— <span data-t="pt3"></span></p></div>
+    </div></section>
+
+    <section class="sec ctaC"><div class="wrap">
+      <h2 data-r="rise" data-t="cta.title"></h2>
+      <div><a class="tel" href="tel:+31687153333" data-r="rise" style="--d:.1s">06 871 53 33</a><address data-r="rise" style="--d:.2s">Groen-blauwlaan 153<br>2718 GS Zoetermeer</address><a class="btn" href="#" data-r="rise" style="--d:.3s" data-t="cta"></a></div>
+    </div></section>
+  </main>
+  <footer class="footC"><div class="wrap" data-t="foot"></div></footer>
+</div>
+
+<div class="switcher" role="group" aria-label="Design direction">
+  <span>Prototype</span>
+  <button data-dir="A" class="on">A · Kalksteen</button>
+  <button data-dir="B">B · Mos</button>
+  <button data-dir="C">C · Leisteen</button>
+</div>
+
+<script>
+// ---------- bilingual copy: [NL, EN] ----------
+const T = {
+  nav1:["Diensten","Services"], nav2:["Materialen","Materials"], nav3:["Over ons","About"], nav4:["Contact","Contact"],
+  cta:["Offerte aanvragen","Get a quote"], cta2:["Bekijk materialen","View materials"], call:["Bel 06 871 53 33","Call 06 871 53 33"],
+  facts:["Natuursteen  ·  Keramiek  ·  Onderhoud  ·  Zoetermeer e.o.","Natural stone  ·  Ceramics  ·  Maintenance  ·  Zoetermeer area"],
+  "a.eye":["Tegelatelier · Zoetermeer","Tile atelier · Zoetermeer"],
+  "a.h1a":["Vakwerk","Craft"], "a.h1b":["in steen.","in stone."],
+  "a.lead":["Tegelwerk, natuursteen en onderhoud met de precisie van een kleermaker. Bij u thuis, in Zoetermeer en omgeving.","Tiling, natural stone and maintenance with a tailor's precision. At your home, in Zoetermeer and the surrounding area."],
+  "a.cap":["Marmer · licht en structuur","Marble · light and texture"],
+  "b.eye":["Het maatwerk van de bouw","The tailoring of construction"],
+  "b.h1a":["Op maat gemaakt,","Made to measure,"], "b.h1b":["tot in de <em>voeg.</em>","down to the <em>joint.</em>"],
+  "b.lead":["Tegelwerk, natuursteen en onderhoud, uitgevoerd zoals een kleermaker werkt: gemeten, gepast en afgewerkt tot het klopt.","Tiling, natural stone and maintenance, done the way a tailor works: measured, fitted and finished until it's right."],
+  "b.cap":["Badkamer in marmer · Zoetermeer","Marble bathroom · Zoetermeer"],
+  "b.ctaTitle":["Vertel ons over <em>uw ruimte.</em>","Tell us about <em>your space.</em>"],
+  "c.eye":["[ 01 ]  Tegelatelier — Zoetermeer","[ 01 ]  Tile atelier — Zoetermeer"],
+  "c.h1a":["Precisie tot op","Precise to"], "c.h1b":["de millimeter.","the millimetre."],
+  "c.lead":["Tegelwerk, natuursteen en onderhoud, gemeten en gezet zoals het hoort. Geen verrassingen, wel een strakke voeg.","Tiling, natural stone and maintenance, measured and set the way it should be. No surprises, just a clean joint."],
+  "c.dim2":["voeg 2 mm","joint 2 mm"], "c.dim3":["vlakheid ±0,5 mm","flatness ±0.5 mm"],
+  "c.aboutTitle":["Eén vakman. Eén werkwijze. Geen verrassingen.","One craftsman. One method. No surprises."],
+  "svc.eye":["Wat wij doen","What we do"], "svc.eyeC":["[ 02 ]  Diensten","[ 02 ]  Services"],
+  "svc.title":["Vier vakgebieden, één standaard.","Four crafts, one standard."],
+  "mat.eye":["Materialen","Materials"], "mat.eyeC":["[ 03 ]  Materialen","[ 03 ]  Materials"],
+  "mat.title":["Het juiste materiaal, eerlijk uitgelegd.","The right material, honestly explained."],
+  "mat.pro":["Sterk in","Strengths"], "mat.con":["Let op","Watch out for"],
+  "about.eye":["Over ons","About us"], "about.eyeC":["[ 04 ]  Over ons","[ 04 ]  About"],
+  "about.quote":["Wij werken zoals een kleermaker: eerst meten, dan passen, dan pas afwerken.","We work like a tailor: measure first, then fit, and only then finish."],
+  "about.text":["S.R. Klus- & onderhoudswerk is een tegelatelier uit Zoetermeer. Van één gebarsten tegel tot een complete badkamer: dezelfde zorg voor elke voeg.","S.R. Klus- & onderhoudswerk is a tile atelier from Zoetermeer. From one cracked tile to a complete bathroom: the same care for every joint."],
+  pt1:["Op locatie","On site"], pt2:["Nederlands & Engels","Dutch & English"], pt3:["Direct contact","Direct contact"],
+  "cta.title":["Vertel ons over uw ruimte.","Tell us about your space."],
+  "cta.text":["Bel, app of vraag een offerte aan. U krijgt een eerlijk antwoord en een heldere prijs.","Call, message or request a quote. You'll get an honest answer and a clear price."],
+  foot:["© 2026 S.R. Klus- & onderhoudswerk · Groen-blauwlaan 153, 2718 GS Zoetermeer · 06 871 53 33","© 2026 S.R. Klus- & onderhoudswerk · Groen-blauwlaan 153, 2718 GS Zoetermeer · 06 871 53 33"],
+};
+const services = [
+  [["Tegelwerk","Tiling"],["Wanden en vloeren, strak uitgezet en gezet.","Walls and floors, precisely set out and laid."]],
+  [["Reparatie & onderhoud","Repair & maintenance"],["Eén gebarsten tegel of een hele voeg: we herstellen zonder te slopen.","One cracked tile or a whole joint: we repair without tearing out."]],
+  [["Natuursteen op maat","Bespoke natural stone"],["Werkbladen, dorpels en vensterbanken, gemeten en gezaagd voor uw ruimte.","Worktops, sills and thresholds, measured and cut for your room."]],
+  [["Voegen & afwerking","Grouting & finishing"],["Nieuwe voegen, kitwerk en impregneren voor een rustig, duurzaam resultaat.","New joints, sealant and impregnation for a calm, lasting finish."]],
+];
+const materials = [
+  ["graniet",["Graniet","Granite"],["Krasbestendig · Hittebestendig","Scratch-resistant · Heat-resistant"],["Gevoelig voor zure middelen","Sensitive to acidic cleaners"]],
+  ["marmer",["Marmer","Marble"],["Tijdloos · Elke plaat uniek","Timeless · Every slab unique"],["Vlek- en krasgevoelig","Prone to stains and scratches"]],
+  ["kwartsiet",["Kwartsiet","Quartzite"],["Zeer hard · Slijtvast","Very hard · Wear-resistant"],["Gevoelig voor zure middelen","Sensitive to acidic cleaners"]],
+  ["composiet",["Composiet","Composite"],["Veel kleuren · Stootvast","Many colours · Impact-resistant"],["Niet hittebestendig","Not heat-resistant"]],
+  ["keramiek",["Keramiek","Ceramic"],["Onderhoudsarm · Hittebestendig","Low maintenance · Heat-resistant"],["Minder stootvast","Less impact-resistant"]],
+];
+const steps = [[["Meten","Measure"],["We beginnen bij de ruimte, niet bij de tegel.","We start with the room, not the tile."]],[["Passen","Fit"],["Elke snede wordt eerst uitgezet, dan pas gezaagd.","Every cut is set out first, then cut."]],[["Afwerken","Finish"],["Pas als de voeg klopt, zijn we klaar.","We're only done when the joint is right."]]];
+services.forEach(([t,d],i)=>{T["s"+i+"t"]=t;T["s"+i+"d"]=d});
+materials.forEach(([,n,p,c],i)=>{T["m"+i+"n"]=n;T["m"+i+"p"]=p;T["m"+i+"c"]=c});
+steps.forEach(([t,d],i)=>{T["st"+i+"t"]=t;T["st"+i+"d"]=d});
+
+const $ = (s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const mat = (i,cls)=>`<div class="swatch sw-${materials[i][0]}"></div><h3 data-t="m${i}n"></h3><dl><dt data-t="mat.pro"></dt><dd data-t="m${i}p"></dd><dt data-t="mat.con"></dt><dd data-t="m${i}c"></dd></dl>`;
+$("#rowsA").innerHTML = services.map((_,i)=>`<article class="row"><i class="hl" data-r="draw" style="--d:${i*.08}s"></i><span class="n" data-r="rise" style="--d:${.15+i*.08}s">0${i+1}</span><h3 data-r="rise" style="--d:${.2+i*.08}s" data-t="s${i}t"></h3><p data-r="rise" style="--d:${.25+i*.08}s" data-t="s${i}d"></p><span class="ar" aria-hidden="true">→</span></article>`).join("");
+$("#gridA").innerHTML = materials.map((_,i)=>`<div data-r="flip" style="--d:${i*.1}s">${mat(i)}</div>`).join("");
+$("#cardsB").innerHTML = services.map((_,i)=>`<article class="cardB" data-r="lay" style="--d:${i*.12}s"><span class="n">0${i+1}</span><div><h3 data-t="s${i}t"></h3><p data-t="s${i}d"></p></div></article>`).join("");
+$("#rowB").innerHTML = materials.map((_,i)=>`<div class="idx" data-r="lay" style="--d:${i*.1}s">${mat(i)}</div>`).join("");
+$("#stepsB").innerHTML = steps.map((_,i)=>`<div class="step"><span class="n" data-r="rise">0${i+1}</span><h3 data-r="rise" style="--d:.1s" data-t="st${i}t"></h3><p data-r="rise" style="--d:.2s" data-t="st${i}d"></p></div>`).join("");
+$("#cellsC").innerHTML = services.map((_,i)=>`<article class="cellC" data-r="rise" style="--d:${i*.1}s"><span class="n">/0${i+1}</span><h3 data-t="s${i}t"></h3><p data-t="s${i}d"></p></article>`).join("");
+$("#samplesC").innerHTML = materials.map((_,i)=>`<div class="sampleC" data-r="rise" style="--d:${i*.1}s">${mat(i)}</div>`).join("");
+$(".gridC").innerHTML = Array.from({length:12},(_,i)=>`<i style="--i:${i}"></i>`).join("");
+
+// ---------- language ----------
+let lang = "nl";
+try { const s = localStorage.getItem("sr-proto-lang"); if (s === "en" || s === "nl") lang = s; } catch {}
+function setLang(l){
+  lang = l; document.documentElement.lang = l; const k = l === "nl" ? 0 : 1;
+  $$("[data-t]").forEach(el=>{ const v = T[el.dataset.t]; if (v) el.textContent = v[k]; });
+  $$("[data-th]").forEach(el=>{ const v = T[el.dataset.th]; if (v) el.innerHTML = v[k]; });
+  $$(".lang button").forEach(b=>b.classList.toggle("on", b.dataset.l === l));
+  try { localStorage.setItem("sr-proto-lang", l); } catch {}
+}
+$$(".lang button").forEach(b=>b.addEventListener("click",()=>setLang(b.dataset.l)));
+setLang(lang);
+
+// ---------- reveal on scroll ----------
+const io = new IntersectionObserver(es=>es.forEach(e=>{ if (e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } }),{threshold:.18,rootMargin:"0px 0px -8% 0px"});
+const watch = dir => $$("[data-r]",dir).forEach(el=>{ el.classList.remove("in"); io.observe(el); });
+
+// ---------- direction switching + hero entrance ----------
+let active = $("#A");
+function enter(dir){
+  dir.classList.remove("loaded","settled");
+  void dir.offsetWidth;
+  setTimeout(()=>dir.classList.add("loaded"), 40);
+  setTimeout(()=>dir.classList.add("settled"), 2300);
+  watch(dir);
+}
+$$(".switcher button").forEach(b=>b.addEventListener("click",()=>{
+  $$(".switcher button").forEach(x=>x.classList.toggle("on", x===b));
+  $$(".dir").forEach(d=>d.classList.remove("on"));
+  active = $("#"+b.dataset.dir); active.classList.add("on");
+  window.scrollTo(0,0); enter(active); onScroll();
+  history.replaceState(null,"","#"+b.dataset.dir);
+}));
+
+// ---------- scroll-driven transforms ----------
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+function onScroll(){
+  // catch up anything scrolled past too fast for the observer (also runs with reduced motion)
+  $$("[data-r]:not(.in)", active).forEach(el=>{ if (el.getBoundingClientRect().bottom < innerHeight*.9) el.classList.add("in"); });
+  if (reduce) return;
+  const p = Math.min(1, Math.max(0, scrollY / (innerHeight * .9)));
+  active.style.setProperty("--p", p.toFixed(4));
+  $$("[data-par]", active).forEach(img=>{
+    const r = img.parentElement.getBoundingClientRect();
+    const t = (r.top + r.height/2 - innerHeight/2) / innerHeight;
+    img.style.setProperty("--y", (-t * 60 - 30).toFixed(1) + "px");
+  });
+}
+addEventListener("scroll", onScroll, {passive:true});
+addEventListener("resize", onScroll);
+
+addEventListener("hashchange",()=>{ const h=location.hash.slice(1); const b=document.querySelector(`.switcher button[data-dir=${h}]`); if (b && active.id!==h) b.click(); });
+const start = (location.hash||"").replace("#","");
+if (["B","C"].includes(start)) $(`.switcher button[data-dir=${start}]`).click(); else { enter(active); onScroll(); }
+</script>
+</body>
+</html>
