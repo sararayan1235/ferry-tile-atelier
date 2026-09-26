@@ -15,3 +15,4 @@ design/
 .dev.vars
 .open-next/
 supabase-access-token.txt
+.gstack/
