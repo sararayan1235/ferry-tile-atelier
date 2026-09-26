@@ -32,6 +32,7 @@ export async function requireUser() {
 export async function requireAdmin() {
   const { supabase, user } = await requireUser();
   if (!user) return { supabase, user: null, profile: null, isAdmin: false };
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  return { supabase, user, profile, isAdmin: profile?.role === "admin" };
+  // public.is_admin() checks the admin_users allowlist in the database; profiles.role is display-only.
+  const { data: isAdmin } = await supabase.rpc("is_admin");
+  return { supabase, user, isAdmin: isAdmin === true };
 }
