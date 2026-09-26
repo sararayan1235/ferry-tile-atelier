@@ -19,7 +19,7 @@ Total time: about 45 minutes. Do the steps in order.
 3. **Project Settings → API**: you'll need three values:
    - Project URL → `NEXT_PUBLIC_SUPABASE_URL`
    - `anon` / publishable key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `service_role` / secret key → `SUPABASE_SERVICE_ROLE_KEY` (**secret**: never paste it into a chat, email or the browser)
+   - `service_role` / secret key → `SUPABASE_SERVICE_ROLE_KEY` (**secret**: never paste it into a chat, email or the browser; see below for where it goes)
 4. **Authentication → Emails → SMTP settings**: Supabase's built-in mailer is only meant for testing and won't reliably deliver sign-up and password-reset emails to customers. Connect a free SMTP provider (for example Resend or Brevo, both have free tiers) **or** under **Authentication → Sign In / Providers → Email** turn off *Confirm email*. Google sign-in works without this.
 
 Put the values in `.env.local` (used on this computer) **and** `.env.production.local` (used when building for Cloudflare). Both files are git-ignored:
@@ -27,12 +27,13 @@ Put the values in `.env.local` (used on this computer) **and** `.env.production.
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
-SUPABASE_SERVICE_ROLE_KEY=eyJ...
 NEXT_PUBLIC_SITE_URL=https://sr-fine-tile-atelier.<your-subdomain>.workers.dev
 NEXT_PUBLIC_AUTH_PROVIDERS=google
 ```
 
 (In `.env.local` use `NEXT_PUBLIC_SITE_URL=http://localhost:3000`.)
+
+**Keep `SUPABASE_SERVICE_ROLE_KEY` out of every `.env*` file.** OpenNext bakes all `.env*` values (even development ones) into the Worker. Store it with `npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY` for the live site, and in `.dev.vars` (git-ignored) for `npm run preview` on this computer.
 
 ## 2. Google sign-in
 
