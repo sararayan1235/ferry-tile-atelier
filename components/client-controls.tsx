@@ -24,6 +24,8 @@ export function useLanguage(): [Language, (next: Language) => void] {
   useEffect(() => {
     document.documentElement.lang = language;
     try { window.localStorage.setItem(STORAGE_KEY, language); } catch {}
+    // Mirror to a cookie so server-rendered portal pages can follow the choice.
+    document.cookie = `${STORAGE_KEY}=${language}; path=/; max-age=31536000; samesite=lax`;
   }, [language]);
 
   return [language, setLanguage];
@@ -38,7 +40,7 @@ export function LanguageToggle({ language, onChange }: { language: Language; onC
   );
 }
 
-export function DashboardSignOut() {
+export function DashboardSignOut({ label = "Uitloggen" }: { label?: string }) {
   const [busy, setBusy] = useState(false);
   const router = useRouter();
 
@@ -48,5 +50,5 @@ export function DashboardSignOut() {
     router.push("/");
     router.refresh();
   }
-  return <button className="button button-ghost button-small" onClick={signOut} disabled={busy} type="button"><LogOut aria-hidden="true" />{busy ? "…" : "Uitloggen"}</button>;
+  return <button className="button button-ghost button-small" onClick={signOut} disabled={busy} type="button"><LogOut aria-hidden="true" />{busy ? "…" : label}</button>;
 }

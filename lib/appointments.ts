@@ -73,11 +73,11 @@ export function canTransitionAppointment(
   return role === "admin" && transitions[current].includes(next);
 }
 
-export function appointmentStatusLabel(status: AppointmentStatus) {
-  return {
-    pending: "In behandeling",
-    confirmed: "Bevestigd",
-    declined: "Afgewezen",
-    completed: "Afgerond",
-  }[status];
+const STATUS_LABELS = {
+  nl: { pending: "In behandeling", confirmed: "Bevestigd", declined: "Afgewezen", completed: "Afgerond" },
+  en: { pending: "Pending", confirmed: "Confirmed", declined: "Declined", completed: "Completed" },
+} as const;
+
+export function appointmentStatusLabel(status: AppointmentStatus, language: "nl" | "en" = "nl") {
+  return STATUS_LABELS[language][status];
 }
