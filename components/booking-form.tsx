@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, LoaderCircle } from "lucide-react";
+import { ArrowRight, CheckCircle2, LoaderCircle, Phone } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { AppointmentInput } from "@/lib/appointments";
+import { BUSINESS } from "@/lib/business";
 
 const copy = {
   nl: {
@@ -16,7 +17,7 @@ const copy = {
     service: "Gewenst werk", date: "Voorkeursdatum", details: "Omschrijving", detailsHint: "Wat moet er gebeuren? Voeg eventueel een foto of afmeting toe.",
     submit: "Aanvraag versturen", submitting: "Aanvraag versturen…", account: "Inloggen om aan te vragen",
     success: "Aanvraag ontvangen", successText: "Bewaar deze referentie. Je vindt de aanvraag terug in je dashboard.",
-    another: "Nog een aanvraag", error: "Controleer de gegevens en probeer opnieuw.", config: "Accounts worden binnenkort geactiveerd.", privacy: "Uw gegevens worden alleen gebruikt om deze aanvraag en de service te behandelen.", dashboard: "Open dashboard", freeAccount: "Een gratis account zorgt ervoor dat je je aanvraag en status altijd kunt volgen.",
+    another: "Nog een aanvraag", error: "Controleer de gegevens en probeer opnieuw.", config: "Online aanvragen wordt binnenkort geactiveerd. Bel ons tot die tijd direct voor een afspraak of offerte:", privacy: "Uw gegevens worden alleen gebruikt om deze aanvraag en de service te behandelen.", dashboard: "Open dashboard", freeAccount: "Een gratis account zorgt ervoor dat je je aanvraag en status altijd kunt volgen.",
   },
   en: {
     eyebrow: "Request an appointment",
@@ -26,7 +27,7 @@ const copy = {
     service: "Service needed", date: "Preferred date", details: "Project details", detailsHint: "What needs to be done? Add a photo or measurements if useful.",
     submit: "Send request", submitting: "Sending request…", account: "Sign in to request",
     success: "Request received", successText: "Keep this reference. You can follow the request in your dashboard.",
-    another: "Another request", error: "Check the details and try again.", config: "Accounts will be activated shortly.", privacy: "Your details are only used to handle this request and provide the service.", dashboard: "Open dashboard", freeAccount: "A free account lets you follow your request and status at all times.",
+    another: "Another request", error: "Check the details and try again.", config: "Online requests open shortly. Until then, call us directly to book or get a quote:", privacy: "Your details are only used to handle this request and provide the service.", dashboard: "Open dashboard", freeAccount: "A free account lets you follow your request and status at all times.",
   },
 };
 
@@ -130,6 +131,7 @@ export function BookingForm({ enabled = true, language = "nl" }: { enabled?: boo
         <label className="field-wide"><span>{t.details} *</span><textarea name="details" rows={5} minLength={15} maxLength={2000} required placeholder={t.detailsHint} /></label>
         <label className="honeypot" aria-hidden="true">Website<input name="companyWebsite" tabIndex={-1} autoComplete="off" /></label>
       </div>
+      {!enabled && <div className="form-notice" role="status"><p>{t.config}</p><a className="button button-primary" href={BUSINESS.phoneHref}><Phone aria-hidden="true" />{BUSINESS.phoneDisplay}</a></div>}
       {signedIn === false && <p className="form-hint">{t.freeAccount}</p>}
       {message && <p className="form-error" role="alert">{message}</p>}
       <button className="button button-primary button-wide" type="submit" disabled={state === "submitting" || !enabled}>

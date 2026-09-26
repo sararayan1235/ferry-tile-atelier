@@ -216,6 +216,8 @@ h1, h2, h3, p { margin-top: 0; }
 .booking-form .button { margin-top: 28px; }
 .form-hint { margin: 20px 0 -8px; color: var(--text-muted); font-size: 14px; }
 .form-error { margin: 16px 0 0; padding: 12px 14px; background: var(--declined-bg); color: var(--declined-fg); font-size: 14px; }
+.form-notice { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin: 24px 0 -8px; padding: 18px 20px; background: var(--pending-bg); color: var(--pending-fg); }
+.form-notice p { margin: 0; max-width: 360px; font-size: 15px; }
 .form-ok { margin: 16px 0 0; padding: 12px 14px; background: var(--confirmed-bg); color: var(--confirmed-fg); font-size: 14px; }
 .privacy-note { margin: 14px 0 0; color: var(--text-muted); font-size: 12px; text-align: center; }
 .booking-success { min-height: 440px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
