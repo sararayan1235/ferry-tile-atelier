@@ -227,6 +227,7 @@ h1, h2, h3, p { margin-top: 0; }
 .site-footer { padding: 40px 0; border-top: 1px solid var(--line); color: var(--text-muted); font-size: 13px; }
 .footer-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 40px; }
 .footer-links { display: flex; gap: 24px; }
+.footer-links a { display: inline-flex; align-items: center; min-height: 44px; }
 .footer-links a:hover { color: var(--text); }
 
 /* ---------------------------------------------------------------- auth */

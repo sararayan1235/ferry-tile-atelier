@@ -21,7 +21,7 @@ function rateLimited(key: string) {
 
 export async function POST(request: Request) {
   if (!hasSupabaseConfig()) return NextResponse.json({ error: "Accounts worden binnenkort geactiveerd." }, { status: 503 });
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
+  const ip = request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
   if (rateLimited(ip)) return NextResponse.json({ error: "Te veel aanvragen. Probeer het later opnieuw." }, { status: 429 });
 
   const body = await request.json().catch(() => null);

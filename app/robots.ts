@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
+import { publicSiteUrl } from "@/lib/supabase/config";
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: { userAgent: "*", allow: "/", disallow: ["/admin/", "/dashboard/", "/api/"] },
-    sitemap: "/sitemap.xml",
+    sitemap: `${publicSiteUrl()}/sitemap.xml`,
   };
 }
