@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { DashboardSignOut } from "@/components/client-controls";
+import { AdminLanguageSwitch } from "@/components/admin-language-switch";
 import { DashboardShell } from "@/components/site-shell";
 import { AppointmentCard, MetricCard } from "@/components/dashboard";
 import { requireUser } from "@/lib/supabase/server";
@@ -32,10 +33,11 @@ export default async function DashboardPage() {
   if (!user) redirect("/login?next=/dashboard");
   const language = await requestLanguage();
   const t = copy[language];
-  const [{ data: profile }, { data }] = await Promise.all([
-    supabase.from("profiles").select("full_name,role").eq("id", user.id).single(),
+  const [{ data: profile }, { data }, { data: isAdmin }] = await Promise.all([
+    supabase.from("profiles").select("full_name").eq("id", user.id).single(),
     // RLS returns only this user's rows (admins see everything on /admin, so filter explicitly here).
     supabase.from("appointments").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
+    supabase.rpc("is_admin"),
   ]);
   const rows = ((data || []) as Appointment[]).map((item) => ({
     id: item.id,
@@ -52,10 +54,10 @@ export default async function DashboardPage() {
   const confirmed = rows.filter((item) => item.status === "confirmed").length;
   const name = profile?.full_name?.split(" ")[0] || user.email?.split("@")[0];
 
-  return <DashboardShell admin={profile?.role === "admin"} current="dashboard" language={language}>
+  return <DashboardShell admin={isAdmin === true} current="dashboard" language={language}>
     <header className="dashboard-header">
       <div><p className="eyebrow">{t.eyebrow}</p><h1>{t.welcome}, {name}.</h1><p>{t.intro}</p></div>
-      <DashboardSignOut label={t.signOut} />
+      <div className="button-row"><AdminLanguageSwitch language={language} /><DashboardSignOut label={t.signOut} /></div>
     </header>
     <section className="metrics-grid" aria-label={t.overview}>
       <MetricCard label={t.total} value={String(rows.length)} detail={t.totalDetail} />
