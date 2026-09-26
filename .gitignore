@@ -14,3 +14,4 @@ supabase/.temp/
 design/
 .dev.vars
 .open-next/
+supabase-access-token.txt
