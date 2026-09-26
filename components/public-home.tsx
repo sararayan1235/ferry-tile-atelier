@@ -2,270 +2,275 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDownRight, ArrowRight, Check, MoveUpRight, Sparkles } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { BookingForm } from "@/components/booking-form";
 import { BrandMark } from "@/components/brand-mark";
-import { LanguageToggle } from "@/components/client-controls";
+import { LanguageToggle, useLanguage } from "@/components/client-controls";
+import { BUSINESS } from "@/lib/business";
 
-type Language = "nl" | "en";
+type Material = { key: string; name: string; strengths: string; watch: string };
 
-type HomeCopy = {
-  navServices: string;
-  navMaterials: string;
-  navProcess: string;
-  navWork: string;
-  navContact: string;
-  login: string;
-  heroEyebrow: string;
-  heroTitle: string;
-  heroAccent: string;
-  heroText: string;
-  primaryCta: string;
-  secondaryCta: string;
-  facts: string[];
-  imageCaption: string;
-  statementEyebrow: string;
-  statementTitle: string;
-  statementText: string;
-  statementLink: string;
-  servicesEyebrow: string;
-  servicesTitle: string;
-  servicesText: string;
-  services: { title: string; text: string }[];
-  materialsEyebrow: string;
-  materialsTitle: string;
-  materialsText: string;
-  materials: { name: string; note: string; tone: string }[];
-  processEyebrow: string;
-  processTitle: string;
-  processText: string;
-  process: { title: string; text: string }[];
-  workEyebrow: string;
-  workTitle: string;
-  workText: string;
-  bookingEyebrow: string;
-  bookingTitle: string;
-  bookingText: string;
-  privacy: string;
-  footerPortal: string;
-  footerAdmin: string;
-  footerNote: string;
-  scroll: string;
-};
-
-const copy: Record<Language, HomeCopy> = {
+const copy = {
   nl: {
-    navServices: "Diensten",
-    navMaterials: "Materialen",
-    navProcess: "Werkwijze",
-    navWork: "Werk",
-    navContact: "Contact",
-    login: "Inloggen",
-    heroEyebrow: "Mobiel tegelatelier · heel Nederland",
-    heroTitle: "Vakwerk met",
-    heroAccent: "aandacht.",
-    heroText: "Tegelwerk, reparatie en afwerking met de precisie van een atelier. Bij u op locatie, waar u ook bent.",
-    primaryCta: "Afspraak aanvragen",
-    secondaryCta: "Bekijk ons werk",
-    facts: ["Op locatie in heel NL", "Nederlands & Engels", "Direct contact"],
-    imageCaption: "Marmer · licht en structuur",
-    statementEyebrow: "Onze manier",
-    statementTitle: "Details maken het verschil.",
-    statementText: "Van een enkele gebarsten tegel tot een volledige afwerking. Wij combineren ervaren vakmanschap met een zuin oog voor vorm, materiaal en afwerking.",
-    statementLink: "Vertel ons over uw project",
+    skip: "Naar de inhoud",
+    nav: { services: "Diensten", materials: "Materialen", process: "Werkwijze", contact: "Contact" },
+    account: "Mijn account",
+    cta: "Offerte aanvragen",
+    heroEyebrow: "Tegelatelier · Zoetermeer",
+    heroTitle: ["Vakwerk", "in steen."],
+    heroLead: "Tegelwerk, natuursteen en onderhoud met de precisie van een kleermaker. Bij u thuis, in Zoetermeer en omgeving.",
+    heroSecondary: "Bekijk materialen",
+    facts: ["Op locatie", "Nederlands & Engels", "Direct contact"],
+    heroCaption: "Marmer · licht en structuur",
     servicesEyebrow: "Wat wij doen",
-    servicesTitle: "Voor elke ruimte een passende oplossing.",
-    servicesText: "Klein werk of een volledige afwerking: wij houden de lijnen strak en het resultaat prettig om mee te werken.",
+    servicesTitle: "Vier vakgebieden, één standaard.",
+    servicesText: "Klein werk of een complete ruimte: dezelfde zorg voor elke snede en elke voeg.",
     services: [
-      { title: "Tegelreparatie", text: "Een beschadigde tegel terug in balans, zonder de hele ruimte over te doen." },
-      { title: "Vervangen & plaatsen", text: "Nieuwe tegels nauwkeurig geselecteerd, gesneden en geplaatst." },
-      { title: "Voegen & afwerken", text: "Een rustige, duurzame afwerking die de architectuur laat spreken." },
-      { title: "Werkbladen & maatwerk", text: "Werkbladen en details op maat, afgestemd op uw dagelijks gebruik." },
+      ["Tegelwerk", "Wanden en vloeren, strak uitgezet en gezet."],
+      ["Reparatie & onderhoud", "Eén gebarsten tegel of een hele voeg: we herstellen zonder te slopen."],
+      ["Natuursteen op maat", "Werkbladen, dorpels en vensterbanken, gemeten en gezaagd voor uw ruimte."],
+      ["Voegen & afwerking", "Nieuwe voegen, kitwerk en impregneren voor een rustig, duurzaam resultaat."],
     ],
-    materialsEyebrow: "Materiaal & vakmanschap",
-    materialsTitle: "Goed werk begint bij het juiste materiaal.",
-    materialsText: "Wij werken met natuurlijke steen, keramiek en composiet. Het materiaal bepaalt de sfeer; de uitvoering bepaalt of het blijft moeiteloos.",
+    materialsEyebrow: "Materialen",
+    materialsTitle: "Het juiste materiaal, eerlijk uitgelegd.",
+    materialsText: "Elk materiaal heeft sterke punten en aandachtspunten. We helpen u kiezen wat past bij uw ruimte en gebruik.",
+    strengths: "Sterk in",
+    watch: "Let op",
     materials: [
-      { name: "Natuursteen", note: "marmer · graniet · kwartsiet", tone: "swatch-stone" },
-      { name: "Keramiek", note: "kleur · formaat · afwerking", tone: "swatch-clay" },
-      { name: "Composiet", note: "praktisch · veelzijdig · sterk", tone: "swatch-sand" },
-      { name: "Voegen", note: "klein detail, grote indruk", tone: "swatch-ink" },
-    ],
+      { key: "graniet", name: "Graniet", strengths: "Krasbestendig · Hittebestendig", watch: "Gevoelig voor zure middelen" },
+      { key: "marmer", name: "Marmer", strengths: "Tijdloos · Elke plaat uniek", watch: "Vlek- en krasgevoelig" },
+      { key: "kwartsiet", name: "Kwartsiet", strengths: "Zeer hard · Slijtvast", watch: "Gevoelig voor zure middelen" },
+      { key: "composiet", name: "Composiet", strengths: "Veel kleuren · Stootvast", watch: "Niet hittebestendig" },
+      { key: "keramiek", name: "Keramiek", strengths: "Onderhoudsarm · Hittebestendig", watch: "Minder stootvast" },
+    ] as Material[],
     processEyebrow: "Werkwijze",
     processTitle: "Duidelijk van begin tot eind.",
-    processText: "Geen verrassingen. U weet wie er komt, waarom er gewerkt wordt en wat er daarna gebeurt.",
+    processText: "Geen verrassingen. U weet wie er komt, wat er gebeurt en wat het kost.",
     process: [
-      { title: "Aanvragen", text: "U vertelt wat er moet gebeuren en waar." },
-      { title: "Wij beoordelen", text: "U ontvangt een reactie en een passende voorgestelde datum." },
-      { title: "Uitvoering", text: "Wij voeren het werk zorgvuldig en netjes uit." },
-      { title: "Oplevering", text: "Alles wordt gecontroleerd en met u doorgenomen." },
+      ["Aanvragen", "U vertelt online wat er moet gebeuren en waar."],
+      ["Beoordelen", "U ontvangt een reactie en een voorgestelde datum."],
+      ["Uitvoeren", "Wij werken zorgvuldig, schoon en volgens afspraak."],
+      ["Opleveren", "Alles wordt gecontroleerd en met u doorgelopen."],
     ],
-    workEyebrow: "Geselecteerd werk",
-    workTitle: "Textuur, licht en precies één goede lijn.",
-    workText: "Een kleine selectie uit ons werk. Elk project begint met luisteren naar de ruimte.",
-    bookingEyebrow: "Afspraak aanvragen",
-    bookingTitle: "Ruimte voor een mooi resultaat.",
-    bookingText: "Vul het formulier in en log in of maak een gratis account. U ontvangt een referentie en volgt de status van uw aanvraag.",
-    privacy: "Uw gegevens worden alleen gebruikt om deze aanvraag en de service te behandelen.",
-    footerPortal: "Klantenportaal",
-    footerAdmin: "Beheer",
-    footerNote: "Fine tile atelier · Zoetermeer en heel Nederland",
-    scroll: "Scroll",
+    aboutEyebrow: "Over ons",
+    aboutQuote: "Wij werken zoals een kleermaker: eerst meten, dan passen, dan pas afwerken.",
+    aboutText: "S.R. Klus- & onderhoudswerk is een tegelatelier uit Zoetermeer. Van één gebarsten tegel tot een complete badkamer: dezelfde zorg voor elke voeg.",
+    workLarge: "Vakmanschap / 01",
+    workSmall: "Zellige in groen / 02",
+    bookingEyebrow: "Offerte aanvragen",
+    bookingTitle: "Vertel ons over uw ruimte.",
+    bookingText: "Vul het formulier in en log in of maak gratis een account. U krijgt direct een referentie en volgt de status in uw portaal.",
+    privacy: "Uw gegevens worden alleen gebruikt om deze aanvraag te behandelen.",
+    footerPortal: "Klantportaal",
+    footerNote: "Fine tile atelier · Zoetermeer en omgeving",
   },
   en: {
-    navServices: "Services",
-    navMaterials: "Materials",
-    navProcess: "Process",
-    navWork: "Selected work",
-    navContact: "Contact",
-    login: "Sign in",
-    heroEyebrow: "Mobile tile atelier · across the Netherlands",
-    heroTitle: "Craft with",
-    heroAccent: "care.",
-    heroText: "Tiling, repair and finishing with the precision of an atelier. We come to you, wherever you are.",
-    primaryCta: "Request an appointment",
-    secondaryCta: "View our work",
-    facts: ["On site across NL", "Dutch & English", "Direct contact"],
-    imageCaption: "Marble · light and structure",
-    statementEyebrow: "Our approach",
-    statementTitle: "Details make the difference.",
-    statementText: "From one cracked tile to a complete finish. We combine experienced craftsmanship with a sharp eye for form, material and detail.",
-    statementLink: "Tell us about your project",
+    skip: "Skip to content",
+    nav: { services: "Services", materials: "Materials", process: "Process", contact: "Contact" },
+    account: "My account",
+    cta: "Get a quote",
+    heroEyebrow: "Tile atelier · Zoetermeer",
+    heroTitle: ["Craft", "in stone."],
+    heroLead: "Tiling, natural stone and maintenance with a tailor's precision. At your home, in Zoetermeer and the surrounding area.",
+    heroSecondary: "View materials",
+    facts: ["On site", "Dutch & English", "Direct contact"],
+    heroCaption: "Marble · light and texture",
     servicesEyebrow: "What we do",
-    servicesTitle: "The right solution for every room.",
-    servicesText: "Small repairs or a complete finish: we keep the lines clean and the result easy to live with.",
+    servicesTitle: "Four crafts, one standard.",
+    servicesText: "A small repair or a complete room: the same care for every cut and every joint.",
     services: [
-      { title: "Tile repair", text: "A damaged tile brought back into balance, without renewing the entire room." },
-      { title: "Replace & install", text: "New tiles carefully selected, cut and installed." },
-      { title: "Grout & finishing", text: "A calm, durable finish that lets the architecture speak." },
-      { title: "Worktops & custom work", text: "Worktops and details made to measure for how you live." },
+      ["Tiling", "Walls and floors, precisely set out and laid."],
+      ["Repair & maintenance", "One cracked tile or a whole joint: we repair without tearing out."],
+      ["Bespoke natural stone", "Worktops, sills and thresholds, measured and cut for your room."],
+      ["Grouting & finishing", "New joints, sealant and impregnation for a calm, lasting finish."],
     ],
-    materialsEyebrow: "Material & craft",
-    materialsTitle: "Good work starts with the right material.",
-    materialsText: "We work with natural stone, ceramic and composite. Material sets the mood; execution keeps it effortless.",
+    materialsEyebrow: "Materials",
+    materialsTitle: "The right material, honestly explained.",
+    materialsText: "Every material has strengths and trade-offs. We help you choose what suits your room and how you use it.",
+    strengths: "Strengths",
+    watch: "Watch out for",
     materials: [
-      { name: "Natural stone", note: "marble · granite · quartzite", tone: "swatch-stone" },
-      { name: "Ceramic", note: "colour · format · finish", tone: "swatch-clay" },
-      { name: "Composite", note: "practical · versatile · strong", tone: "swatch-sand" },
-      { name: "Grout", note: "a small detail, a big impression", tone: "swatch-ink" },
-    ],
+      { key: "graniet", name: "Granite", strengths: "Scratch-resistant · Heat-resistant", watch: "Sensitive to acidic cleaners" },
+      { key: "marmer", name: "Marble", strengths: "Timeless · Every slab unique", watch: "Prone to stains and scratches" },
+      { key: "kwartsiet", name: "Quartzite", strengths: "Very hard · Wear-resistant", watch: "Sensitive to acidic cleaners" },
+      { key: "composiet", name: "Composite", strengths: "Many colours · Impact-resistant", watch: "Not heat-resistant" },
+      { key: "keramiek", name: "Ceramic", strengths: "Low maintenance · Heat-resistant", watch: "Less impact-resistant" },
+    ] as Material[],
     processEyebrow: "How it works",
     processTitle: "Clear from start to finish.",
-    processText: "No surprises. You know who is coming, why the work is being done and what happens next.",
+    processText: "No surprises. You know who is coming, what will happen and what it costs.",
     process: [
-      { title: "Request", text: "Tell us what needs to happen and where." },
-      { title: "We assess", text: "You receive a response and a suitable proposed date." },
-      { title: "Execution", text: "We carry out the work carefully and neatly." },
-      { title: "Handover", text: "Everything is checked and reviewed with you." },
+      ["Request", "Tell us online what needs doing and where."],
+      ["Assessment", "You receive a reply and a proposed date."],
+      ["Execution", "We work carefully, cleanly and as agreed."],
+      ["Handover", "Everything is checked and walked through with you."],
     ],
-    workEyebrow: "Selected work",
-    workTitle: "Texture, light and exactly one good line.",
-    workText: "A small selection of our work. Every project starts by listening to the room.",
-    bookingEyebrow: "Request an appointment",
-    bookingTitle: "Make room for a beautiful result.",
-    bookingText: "Complete the form and sign in or create a free account. You will receive a reference and follow the status of your request.",
-    privacy: "Your details are only used to handle this request and provide the service.",
+    aboutEyebrow: "About us",
+    aboutQuote: "We work like a tailor: measure first, then fit, and only then finish.",
+    aboutText: "S.R. Klus- & onderhoudswerk is a tile atelier from Zoetermeer. From one cracked tile to a complete bathroom: the same care for every joint.",
+    workLarge: "Craftsmanship / 01",
+    workSmall: "Green zellige / 02",
+    bookingEyebrow: "Get a quote",
+    bookingTitle: "Tell us about your space.",
+    bookingText: "Fill in the form and sign in or create a free account. You get a reference straight away and can follow the status in your portal.",
+    privacy: "Your details are only used to handle this request.",
     footerPortal: "Customer portal",
-    footerAdmin: "Admin",
-    footerNote: "Fine tile atelier · Zoetermeer and across the Netherlands",
-    scroll: "Scroll",
+    footerNote: "Fine tile atelier · Zoetermeer and surroundings",
   },
 };
 
 export function PublicHome({ accountsEnabled }: { accountsEnabled: boolean }) {
-  const [language, setLanguage] = useState<Language>("nl");
+  const [language, setLanguage] = useLanguage();
+  const [loaded, setLoaded] = useState(false);
   const t = copy[language];
 
   useEffect(() => {
-    const saved = window.localStorage.getItem("sr-language");
-    if (saved !== "en" && saved !== "nl") return;
-    const timer = window.setTimeout(() => setLanguage(saved), 0);
+    const timer = window.setTimeout(() => setLoaded(true), 40);
     return () => window.clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    document.documentElement.lang = language;
-    window.localStorage.setItem("sr-language", language);
-  }, [language]);
-
   return (
-    <div className="stone-site">
-      <header className="stone-header">
-        <div className="stone-container stone-header-inner">
-          <Link href="/" aria-label="S.R. Klus- en Onderhoudswerk, home"><BrandMark /></Link>
-          <nav className="stone-nav" aria-label={language === "nl" ? "Hoofdnavigatie" : "Main navigation"}>
-            <Link href="/#diensten">{t.navServices}</Link>
-            <Link href="/#materialen">{t.navMaterials}</Link>
-            <Link href="/#proces">{t.navProcess}</Link>
-            <Link href="/#werk">{t.navWork}</Link>
-            <Link href="/#contact">{t.navContact}</Link>
+    <div className={loaded ? "is-loaded" : undefined}>
+      <a className="skip-link" href="#main">{t.skip}</a>
+      <header className="site-header">
+        <div className="container header-inner">
+          <Link href="/" aria-label="S.R. Fine Tile Atelier, home"><BrandMark /></Link>
+          <nav className="site-nav" aria-label={language === "nl" ? "Hoofdnavigatie" : "Main navigation"}>
+            <a href="#diensten">{t.nav.services}</a>
+            <a href="#materialen">{t.nav.materials}</a>
+            <a href="#werkwijze">{t.nav.process}</a>
+            <a href="#contact">{t.nav.contact}</a>
           </nav>
-          <div className="stone-header-actions">
+          <div className="header-actions">
             <LanguageToggle language={language} onChange={setLanguage} />
-            <Link className="button button-dark button-small" href="/login">{t.login}</Link>
+            <Link className="text-link" href="/login">{t.account}</Link>
+            <a className="button button-primary button-small" href="#booking">{t.cta}</a>
           </div>
         </div>
       </header>
 
-      <main>
-        <section className="stone-hero" id="top">
-          <div className="stone-container stone-hero-grid">
-            <div className="stone-hero-copy">
-              <p className="eyebrow eyebrow-dark reveal">{t.heroEyebrow}</p>
-              <h1 className="reveal delay-1">{t.heroTitle}<br /><em>{t.heroAccent}</em></h1>
-              <p className="hero-copy reveal delay-2">{t.heroText}</p>
-              <div className="button-row reveal delay-3">
-                <a className="button button-dark" href="#booking">{t.primaryCta} <ArrowRight aria-hidden="true" /></a>
-                <a className="button button-line" href="#werk">{t.secondaryCta} <ArrowDownRight aria-hidden="true" /></a>
+      <main id="main">
+        <section className="container hero" data-scroll-progress>
+          <div className="hero-copy">
+            <p className="eyebrow enter" style={{ "--d": ".1s" } as React.CSSProperties}>{t.heroEyebrow}</p>
+            <h1 className="lines">
+              <span><span style={{ "--d": ".15s" } as React.CSSProperties}>{t.heroTitle[0]}</span></span>
+              <span><span style={{ "--d": ".28s" } as React.CSSProperties}>{t.heroTitle[1]}</span></span>
+            </h1>
+            <p className="lead enter" style={{ "--d": ".5s" } as React.CSSProperties}>{t.heroLead}</p>
+            <div className="button-row enter" style={{ "--d": ".65s" } as React.CSSProperties}>
+              <a className="button button-primary" href="#booking">{t.cta} <ArrowRight aria-hidden="true" /></a>
+              <a className="button button-secondary" href="#materialen">{t.heroSecondary}</a>
+            </div>
+            <p className="hero-facts enter" style={{ "--d": ".8s" } as React.CSSProperties}>
+              {t.facts.map((fact) => <span key={fact}><Check aria-hidden="true" />{fact}</span>)}
+            </p>
+          </div>
+          <div className="hero-visual">
+            <div className="tile-split" role="img" aria-label={language === "nl" ? "Badkamer met marmeren tegels en messing details" : "Bathroom with marble tiles and brass details"} style={{ "--img": "url(/assets/hero-bathroom.webp)" } as React.CSSProperties}>
+              <span className="tile t1" /><span className="tile t2" /><span className="tile t3" /><span className="tile t4" />
+            </div>
+            <p className="hero-caption enter" style={{ "--d": ".9s" } as React.CSSProperties}><span>{t.heroCaption}</span><span>01 / 04</span></p>
+          </div>
+        </section>
+
+        <section className="section" id="diensten" aria-labelledby="services-title">
+          <div className="container">
+            <div className="section-head">
+              <div><p className="eyebrow" data-r="rise">{t.servicesEyebrow}</p><h2 id="services-title" data-r="rise" style={{ "--d": ".1s" } as React.CSSProperties}>{t.servicesTitle}</h2></div>
+              <p data-r="rise" style={{ "--d": ".2s" } as React.CSSProperties}>{t.servicesText}</p>
+            </div>
+            <ol className="service-rows">
+              {t.services.map(([title, text], i) => (
+                <li className="service-row" key={title}>
+                  <i data-r="draw" style={{ "--d": `${i * 0.08}s` } as React.CSSProperties} />
+                  <span className="num" data-r="rise" style={{ "--d": `${0.15 + i * 0.08}s` } as React.CSSProperties}>0{i + 1}</span>
+                  <h3 data-r="rise" style={{ "--d": `${0.2 + i * 0.08}s` } as React.CSSProperties}>{title}</h3>
+                  <p data-r="rise" style={{ "--d": `${0.25 + i * 0.08}s` } as React.CSSProperties}>{text}</p>
+                  <ArrowUpRight aria-hidden="true" />
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section className="section section-sunken" id="materialen" aria-labelledby="materials-title">
+          <div className="container">
+            <div className="section-head">
+              <div><p className="eyebrow" data-r="rise">{t.materialsEyebrow}</p><h2 id="materials-title" data-r="rise" style={{ "--d": ".1s" } as React.CSSProperties}>{t.materialsTitle}</h2></div>
+              <p data-r="rise" style={{ "--d": ".2s" } as React.CSSProperties}>{t.materialsText}</p>
+            </div>
+            <div className="material-grid">
+              {t.materials.map((m, i) => (
+                <article className="material" key={m.key} data-r="flip" style={{ "--d": `${i * 0.1}s` } as React.CSSProperties}>
+                  <div className={`swatch sw-${m.key}`} aria-hidden="true" />
+                  <h3>{m.name}</h3>
+                  <dl><dt>{t.strengths}</dt><dd>{m.strengths}</dd><dt>{t.watch}</dt><dd>{m.watch}</dd></dl>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="section" id="werkwijze" aria-labelledby="process-title">
+          <div className="container">
+            <div className="section-head">
+              <div><p className="eyebrow" data-r="rise">{t.processEyebrow}</p><h2 id="process-title" data-r="rise" style={{ "--d": ".1s" } as React.CSSProperties}>{t.processTitle}</h2></div>
+              <p data-r="rise" style={{ "--d": ".2s" } as React.CSSProperties}>{t.processText}</p>
+            </div>
+            <ol className="process-list">
+              {t.process.map(([title, text], i) => (
+                <li key={title} data-r="rise" style={{ "--d": `${i * 0.1}s` } as React.CSSProperties}><span>0{i + 1}</span><h3>{title}</h3><p>{text}</p></li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section className="section section-sunken" aria-labelledby="about-title">
+          <div className="container">
+            <div className="about">
+              <div className="about-copy">
+                <p className="eyebrow" data-r="rise" id="about-title">{t.aboutEyebrow}</p>
+                <blockquote data-r="rise" style={{ "--d": ".1s" } as React.CSSProperties}>{t.aboutQuote}</blockquote>
+                <p data-r="rise" style={{ "--d": ".2s" } as React.CSSProperties}>{t.aboutText}</p>
+                <p className="about-points" data-r="rise" style={{ "--d": ".3s" } as React.CSSProperties}>{t.facts.map((fact) => <span key={fact}>{fact}</span>)}</p>
               </div>
-              <div className="hero-facts reveal delay-4">{t.facts.map((fact) => <span key={fact}><Check aria-hidden="true" />{fact}</span>)}</div>
+              <div className="about-photo" data-r="rise" style={{ "--d": ".15s" } as React.CSSProperties}>
+                <Image src="/assets/craft-detail.webp" alt={language === "nl" ? "Vakman legt een natuurstenen tegel" : "Craftsman laying a natural stone tile"} fill sizes="(max-width: 900px) 100vw, 40vw" data-parallax />
+              </div>
             </div>
-            <div className="stone-hero-visual reveal delay-2">
-              <Image src="/assets/hero-bathroom.jpg" alt="Verfijnd afgewerkt badkamer met marmer en natuurlijk licht" fill priority sizes="(max-width: 800px) 100vw, 54vw" />
-              <div className="image-wash" />
-              <span className="image-caption">{t.imageCaption}</span>
-              <span className="image-index">01 / 03</span>
+            <div className="work-strip">
+              <figure data-r="rise"><Image src="/assets/hero-bathroom.webp" alt={language === "nl" ? "Afgewerkte marmeren badkamer" : "Finished marble bathroom"} fill sizes="(max-width: 900px) 100vw, 58vw" /><figcaption>{t.workLarge}</figcaption></figure>
+              <figure data-r="rise" style={{ "--d": ".12s" } as React.CSSProperties}><Image src="/assets/green-kitchen.webp" alt={language === "nl" ? "Groene zellige tegels in een keuken" : "Green zellige tiles in a kitchen"} fill sizes="(max-width: 900px) 100vw, 40vw" /><figcaption>{t.workSmall}</figcaption></figure>
             </div>
           </div>
-          <a className="scroll-cue scroll-cue-dark" href="#diensten"><span>{t.scroll}</span><i /></a>
         </section>
 
-        <section className="statement section-pad reveal" id="diensten">
-          <div className="stone-container statement-grid">
-            <div className="delay-1"><p className="eyebrow">{t.statementEyebrow}</p><h2>{t.statementTitle}</h2></div>
-            <div className="delay-2"><p className="lead">{t.statementText}</p><a className="text-link" href="#booking">{t.statementLink} <ArrowRight aria-hidden="true" /></a></div>
+        <section className="section" id="booking" aria-labelledby="booking-title">
+          <div className="container booking-grid">
+            <div className="booking-intro" id="contact">
+              <p className="eyebrow" data-r="rise">{t.bookingEyebrow}</p>
+              <h2 id="booking-title" data-r="rise" style={{ "--d": ".1s" } as React.CSSProperties}>{t.bookingTitle}</h2>
+              <p data-r="rise" style={{ "--d": ".2s" } as React.CSSProperties}>{t.bookingText}</p>
+              <div className="contact-block" data-r="rise" style={{ "--d": ".3s" } as React.CSSProperties}>
+                <strong>{BUSINESS.name}</strong>
+                <a className="tel" href={BUSINESS.phoneHref}>{BUSINESS.phoneDisplay}</a>
+                <address>{BUSINESS.addressLine1}<br />{BUSINESS.addressLine2}</address>
+              </div>
+              <p className="secure-note"><ShieldCheck aria-hidden="true" />{t.privacy}</p>
+            </div>
+            <BookingForm enabled={accountsEnabled} language={language} />
           </div>
-        </section>
-
-        <section className="services section-pad section-tint reveal" aria-labelledby="services-title">
-          <div className="stone-container">
-            <div className="section-heading section-heading-wide delay-1"><div><p className="eyebrow">{t.servicesEyebrow}</p><h2 id="services-title">{t.servicesTitle}</h2></div><p>{t.servicesText}</p></div>
-            <div className="service-list delay-2">{t.services.map((service, index) => <article className="service-row" key={service.title}><span className="service-number">0{index + 1}</span><h3>{service.title}</h3><p>{service.text}</p><MoveUpRight aria-hidden="true" /></article>)}</div>
-          </div>
-        </section>
-
-        <section className="materials section-pad reveal" id="materialen">
-          <div className="stone-container materials-grid">
-            <div className="materials-image delay-1"><Image src="/assets/green-kitchen.png" alt="Handgemaakte groene tegels in een keuken" fill sizes="(max-width: 800px) 100vw, 48vw" /><span>01 / green zellige</span></div>
-            <div className="materials-copy delay-2"><p className="eyebrow">{t.materialsEyebrow}</p><h2>{t.materialsTitle}</h2><p className="lead">{t.materialsText}</p><div className="material-list">{t.materials.map((material) => <div className="material-row" key={material.name}><span className={`material-swatch ${material.tone}`} /><div><strong>{material.name}</strong><small>{material.note}</small></div></div>)}</div></div>
-          </div>
-        </section>
-
-        <section className="process section-pad section-tint reveal" id="proces">
-          <div className="stone-container"><div className="section-heading delay-1"><div><p className="eyebrow">{t.processEyebrow}</p><h2>{t.processTitle}</h2></div><p>{t.processText}</p></div><ol className="process-list delay-2">{t.process.map((step, index) => <li key={step.title}><span>0{index + 1}</span><div><h3>{step.title}</h3><p>{step.text}</p></div></li>)}</ol></div>
-        </section>
-
-        <section className="work section-pad reveal" id="werk">
-          <div className="stone-container"><div className="section-heading section-heading-wide delay-1"><div><p className="eyebrow">{t.workEyebrow}</p><h2>{t.workTitle}</h2></div><p>{t.workText}</p></div><div className="work-gallery delay-2"><figure className="work-image work-image-large"><Image src="/assets/craft-detail.png" alt="Vakman legt een natuurlijke steen tegel" fill sizes="(max-width: 800px) 100vw, 58vw" /><figcaption>Precision / 01</figcaption></figure><figure className="work-image work-image-small"><Image src="/assets/green-kitchen.png" alt="Groene zellige in een keuken" fill sizes="(max-width: 800px) 100vw, 34vw" /><figcaption>Texture / 02</figcaption></figure></div></div>
-        </section>
-
-        <section className="booking-section section-pad reveal" id="booking">
-          <div className="stone-container booking-grid"><div className="booking-intro"><p className="eyebrow eyebrow-light">{t.bookingEyebrow}</p><h2>{t.bookingTitle}</h2><p>{t.bookingText}</p><div className="booking-contact"><strong>S.R. Klus- & onderhoudswerk</strong><a href="tel:+31687153336">06 871 53 33</a><span>Groen-blauwlaan 153<br />2718 GS Zoetermeer</span></div><p className="secure-note"><Sparkles aria-hidden="true" />{t.privacy}</p></div><BookingForm enabled={accountsEnabled} language={language} /></div>
         </section>
       </main>
 
-      <footer className="site-footer" id="contact"><div className="stone-container footer-inner"><Link className="footer-brand" href="#top"><Image src="/assets/logo-work.png" alt="S.R. Klus- en Onderhoudswerk" width={34} height={34} style={{border: '1px solid rgba(243,240,233,.55)', borderRadius: '2px', objectFit: 'cover'}} /><span>S.R. Klus- & onderhoudswerk<small>{t.footerNote}</small></span></Link><span>© {new Date().getFullYear()} S.R. Klus- en Onderhoudswerk</span><div className="footer-links"><Link href="/login">{t.footerPortal}</Link><Link href="/admin">{t.footerAdmin}</Link></div></div></footer>
+      <footer className="site-footer">
+        <div className="container footer-inner">
+          <span>© {new Date().getFullYear()} {BUSINESS.name} · {t.footerNote}</span>
+          <div className="footer-links"><Link href="/login">{t.footerPortal}</Link><a href={BUSINESS.phoneHref}>{BUSINESS.phoneDisplay}</a></div>
+        </div>
+      </footer>
     </div>
   );
 }

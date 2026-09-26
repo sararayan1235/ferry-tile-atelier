@@ -11,7 +11,12 @@ export type DashboardAppointment = {
   details: string;
   status: AppointmentStatus;
   createdAt: string;
+  note?: string | null;
 };
+
+export function formatDate(isoDate: string) {
+  return new Intl.DateTimeFormat("nl-NL", { dateStyle: "long", timeZone: "UTC" }).format(new Date(`${isoDate.slice(0, 10)}T00:00:00Z`));
+}
 
 export function StatusPill({ status }: { status: AppointmentStatus }) {
   return <span className={`status-pill status-${status}`}>{appointmentStatusLabel(status)}</span>;
@@ -28,9 +33,6 @@ export function MetricCard({ label, value, detail }: { label: string; value: str
 }
 
 export function AppointmentCard({ appointment }: { appointment: DashboardAppointment }) {
-  const date = new Intl.DateTimeFormat("nl-NL", { dateStyle: "long", timeZone: "UTC" }).format(
-    new Date(`${appointment.preferredDate}T00:00:00Z`),
-  );
   return (
     <article className="appointment-card">
       <div className="appointment-card-top">
@@ -39,10 +41,11 @@ export function AppointmentCard({ appointment }: { appointment: DashboardAppoint
       </div>
       <h3>{appointment.service}</h3>
       <div className="appointment-meta">
-        <span><CalendarDays aria-hidden="true" />{date}</span>
+        <span><CalendarDays aria-hidden="true" />{formatDate(appointment.preferredDate)}</span>
         <span><MapPin aria-hidden="true" />{appointment.location}</span>
       </div>
       <p>{appointment.details}</p>
+      {appointment.note && <div className="appointment-note"><b>Bericht van S.R.</b>{appointment.note}</div>}
     </article>
   );
 }

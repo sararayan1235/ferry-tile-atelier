@@ -9,3 +9,8 @@ coverage/
 assets/hero-bathroom.png
 *.log
 supabase/.temp/
+
+# local design prototypes
+design/
+.dev.vars
+.open-next/

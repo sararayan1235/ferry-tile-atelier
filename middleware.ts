@@ -2,7 +2,9 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { hasSupabaseConfig } from "@/lib/supabase/config";
 
-export async function proxy(request: NextRequest) {
+// Kept as `middleware.ts` (edge runtime) on purpose: Next 16's `proxy.ts` always runs on the
+// Node.js runtime, which the Cloudflare Workers adapter (@opennextjs/cloudflare) does not support yet.
+export async function middleware(request: NextRequest) {
   if (!hasSupabaseConfig()) {
     return NextResponse.redirect(new URL(`/setup?next=${encodeURIComponent(request.nextUrl.pathname)}`, request.url));
   }

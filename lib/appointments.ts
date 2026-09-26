@@ -42,6 +42,8 @@ export function validateAppointmentInput(raw: Partial<AppointmentInput>) {
   if (input.location.length < 2) errors.location = "Vul uw postcode of plaats in.";
   if (!input.service) errors.service = "Kies een dienst.";
   if (!DATE_PATTERN.test(input.preferredDate)) errors.preferredDate = "Kies een datum.";
+  // One day of slack so visitors west of UTC can still pick their own "today".
+  else if (input.preferredDate < new Date(Date.now() - 86_400_000).toISOString().slice(0, 10)) errors.preferredDate = "Kies een datum in de toekomst.";
   if (input.details.length < 15) errors.details = "Omschrijf de klus in minimaal 15 tekens.";
 
   if (Object.keys(errors).length) return { ok: false as const, errors, input };

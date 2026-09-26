@@ -2,31 +2,38 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { LogOut } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
-type Language = "nl" | "en";
+export type Language = "nl" | "en";
+const STORAGE_KEY = "sr-language";
 
-export function LanguageToggle({ language, onChange }: { language?: Language; onChange?: (language: Language) => void }) {
-  const [internalLanguage, setInternalLanguage] = useState<Language>(() => {
-    if (typeof window === "undefined") return "nl";
-    return window.localStorage.getItem("sr-language") === "en" ? "en" : "nl";
-  });
-  const activeLanguage = language ?? internalLanguage;
+/** Site language, remembered per browser. Starts as Dutch on the server to keep hydration stable. */
+export function useLanguage(): [Language, (next: Language) => void] {
+  const [language, setLanguage] = useState<Language>("nl");
 
   useEffect(() => {
-    document.documentElement.lang = activeLanguage;
-    window.localStorage.setItem("sr-language", activeLanguage);
-  }, [activeLanguage]);
+    let saved: string | null = null;
+    try { saved = window.localStorage.getItem(STORAGE_KEY); } catch {}
+    if (saved === "en") {
+      const timer = window.setTimeout(() => setLanguage("en"), 0);
+      return () => window.clearTimeout(timer);
+    }
+  }, []);
 
-  function choose(next: Language) {
-    if (!language) setInternalLanguage(next);
-    onChange?.(next);
-  }
+  useEffect(() => {
+    document.documentElement.lang = language;
+    try { window.localStorage.setItem(STORAGE_KEY, language); } catch {}
+  }, [language]);
 
+  return [language, setLanguage];
+}
+
+export function LanguageToggle({ language, onChange }: { language: Language; onChange: (language: Language) => void }) {
   return (
-    <div className="language-toggle" aria-label="Language / Taal">
-      <button className={activeLanguage === "nl" ? "active" : ""} onClick={() => choose("nl")} type="button">NL</button>
-      <button className={activeLanguage === "en" ? "active" : ""} onClick={() => choose("en")} type="button">EN</button>
+    <div className="language-toggle" role="group" aria-label="Taal / Language">
+      <button className={language === "nl" ? "active" : ""} aria-pressed={language === "nl"} onClick={() => onChange("nl")} type="button">NL</button>
+      <button className={language === "en" ? "active" : ""} aria-pressed={language === "en"} onClick={() => onChange("en")} type="button">EN</button>
     </div>
   );
 }
@@ -41,5 +48,5 @@ export function DashboardSignOut() {
     router.push("/");
     router.refresh();
   }
-  return <button className="button button-ghost" onClick={signOut} disabled={busy} type="button">{busy ? "…" : "Uitloggen"}</button>;
+  return <button className="button button-ghost button-small" onClick={signOut} disabled={busy} type="button"><LogOut aria-hidden="true" />{busy ? "…" : "Uitloggen"}</button>;
 }

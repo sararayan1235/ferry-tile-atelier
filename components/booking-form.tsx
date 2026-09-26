@@ -30,8 +30,8 @@ const copy = {
   },
 };
 
-const servicesNl = ["Tegelreparatie", "Tegels vervangen", "Voegen & afwerken", "Werk countertop", "Anders"];
-const servicesEn = ["Tile repair", "Replace tiles", "Grout & finishing", "Countertop work", "Other"];
+const servicesNl = ["Tegelwerk", "Reparatie & onderhoud", "Natuursteen op maat", "Voegen & afwerking", "Anders"];
+const servicesEn = ["Tiling", "Repair & maintenance", "Bespoke natural stone", "Grouting & finishing", "Other"];
 
 export function BookingForm({ enabled = true, language = "nl" }: { enabled?: boolean; language?: "nl" | "en" }) {
   const [state, setState] = useState<"idle" | "submitting" | "success" | "error">("idle");
@@ -126,7 +126,7 @@ export function BookingForm({ enabled = true, language = "nl" }: { enabled?: boo
         <label><span>{t.email} *</span><input name="email" type="email" autoComplete="email" required maxLength={160} /></label>
         <label><span>{t.location} *</span><input name="location" autoComplete="postal-code" required maxLength={100} /></label>
         <label><span>{t.service} *</span><select name="service" required defaultValue=""><option value="" disabled>{language === "nl" ? "Kies een dienst" : "Choose a service"}</option>{(language === "nl" ? servicesNl : servicesEn).map((service) => <option key={service}>{service}</option>)}</select></label>
-        <label><span>{t.date} *</span><input name="preferredDate" type="date" required /></label>
+        <label><span>{t.date} *</span><input name="preferredDate" type="date" required min={new Date().toISOString().slice(0, 10)} /></label>
         <label className="field-wide"><span>{t.details} *</span><textarea name="details" rows={5} minLength={15} maxLength={2000} required placeholder={t.detailsHint} /></label>
         <label className="honeypot" aria-hidden="true">Website<input name="companyWebsite" tabIndex={-1} autoComplete="off" /></label>
       </div>

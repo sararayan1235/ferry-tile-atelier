@@ -1,16 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { SiteAnalytics } from "@/components/analytics";
+import { Archivo, Inter } from "next/font/google";
 import { ScrollRevealObserver } from "@/components/ScrollRevealObserver";
+import { publicSiteUrl } from "@/lib/supabase/config";
 import "./globals.css";
-import "./stone.css";
+
+const archivo = Archivo({ subsets: ["latin", "latin-ext"], axes: ["wdth"], variable: "--font-archivo", display: "swap" });
+const inter = Inter({ subsets: ["latin", "latin-ext"], variable: "--font-inter", display: "swap" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://ferry-tile-atelier.vercel.app"),
-  title: { default: "S.R. Klus- en Onderhoudswerk", template: "%s · S.R. Tile Atelier" },
-  description: "Premium mobile tile repairs, installation and finishing in Zoetermeer and across the Netherlands.",
+  metadataBase: new URL(publicSiteUrl()),
+  title: { default: "S.R. Klus- & onderhoudswerk · Fine Tile Atelier", template: "%s · S.R. Fine Tile Atelier" },
+  description: "Tegelwerk, natuursteen en onderhoud met de precisie van een kleermaker. Tegelatelier in Zoetermeer. Offerte aanvragen: 06 871 53 33.",
   openGraph: {
-    title: "S.R. Klus- en Onderhoudswerk",
-    description: "Vakwerk met aandacht. Op locatie in heel Nederland.",
+    title: "S.R. Klus- & onderhoudswerk · Fine Tile Atelier",
+    description: "Vakwerk in steen. Tegelwerk, natuursteen en onderhoud in Zoetermeer en omgeving.",
     type: "website",
     locale: "nl_NL",
     images: [{ url: "/assets/hero-bathroom.jpg", width: 1200, height: 800 }],
@@ -18,17 +21,16 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f3f0e9",
+  themeColor: "#f6f4ef",
   colorScheme: "light",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="nl" data-scroll-behavior="smooth">
+    <html lang="nl" className={`${archivo.variable} ${inter.variable}`} data-scroll-behavior="smooth">
       <body suppressHydrationWarning>
         {children}
         <ScrollRevealObserver />
-        <SiteAnalytics />
       </body>
     </html>
   );

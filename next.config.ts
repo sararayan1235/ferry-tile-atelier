@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Photos are pre-compressed to WebP in public/assets; Workers has no built-in image optimizer on the free plan.
+  images: { unoptimized: true },
   allowedDevOrigins: ["*.trycloudflare.com"],
   async headers() {
     return [

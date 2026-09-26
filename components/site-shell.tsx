@@ -1,33 +1,20 @@
 import Link from "next/link";
+import { CalendarPlus, LayoutList, Phone, ShieldCheck } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
-import { ScrollRevealObserver } from "@/components/ScrollRevealObserver";
-import { LanguageToggle } from "@/components/client-controls";
+import { BUSINESS } from "@/lib/business";
 
-export function PublicHeader() {
-  return <header className="site-header">
-    <div className="container header-inner">
-      <Link href="/" aria-label="S.R. Klus- en Onderhoudswerk, home"><BrandMark /></Link>
-      <nav className="desktop-nav" aria-label="Hoofdnavigatie">
-        <Link href="/#diensten">Diensten</Link><Link href="/#proces">Werkwijze</Link><Link href="/#werk">Werk</Link><Link href="/#contact">Contact</Link>
-      </nav>
-      <div className="header-actions"><LanguageToggle /><Link className="button button-small" href="/login">Inloggen</Link></div>
-    </div>
-  </header>;
-}
-
-export function DashboardShell({ children, admin = false }: { children: React.ReactNode; admin?: boolean }) {
+export function DashboardShell({ children, admin = false, current }: { children: React.ReactNode; admin?: boolean; current?: "dashboard" | "admin" }) {
   return <div className="dashboard-frame">
     <aside className="dashboard-sidebar">
-      <Link href="/"><BrandMark compact /></Link>
-      <nav>
-        <Link href="/dashboard">Mijn afspraken</Link>
-        {admin && <Link href="/admin">Beheer</Link>}
-        <Link href="/#booking">Nieuwe aanvraag</Link>
-        <a href="tel:+31687153336">06 871 53 33</a>
+      <Link href="/" aria-label="S.R. Fine Tile Atelier, naar de website"><BrandMark /></Link>
+      <nav aria-label="Portaal">
+        <Link href="/dashboard" aria-current={current === "dashboard" ? "page" : undefined}><LayoutList aria-hidden="true" />Mijn afspraken</Link>
+        {admin && <Link href="/admin" aria-current={current === "admin" ? "page" : undefined}><ShieldCheck aria-hidden="true" />Beheer</Link>}
+        <Link href="/#booking"><CalendarPlus aria-hidden="true" />Nieuwe aanvraag</Link>
+        <a href={BUSINESS.phoneHref}><Phone aria-hidden="true" />{BUSINESS.phoneDisplay}</a>
       </nav>
-      <small>Zoetermeer · Heel Nederland</small>
+      <small>{BUSINESS.addressLine1} · {BUSINESS.addressLine2}</small>
     </aside>
-    <main className="dashboard-main">{children}</main>
-    <ScrollRevealObserver />
+    <main className="dashboard-main" id="main">{children}</main>
   </div>;
 }
